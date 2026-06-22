@@ -1,3 +1,4 @@
+import FeaturedStartups from "@/components/home/FeaturedStartups";
 import HeroSection from "@/components/home/HeroSection";
 import StartupStatistics from "@/components/home/StartupStatistics";
 import Footer from "@/components/shared/Footer";
@@ -9,6 +10,7 @@ export default function Home() {
       <MainNavbar />
       <HeroSection />
       <StartupStatistics />
+      <FeaturedStartups />
       <Footer />
     </div>
   );
