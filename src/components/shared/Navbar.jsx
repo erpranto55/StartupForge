@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
+
 import {
     BriefcaseBusiness,
     ChevronRight,
@@ -12,7 +14,6 @@ import {
     Rocket,
     X,
 } from "lucide-react";
-import Image from "next/image";
 
 const links = [
     {
@@ -34,83 +35,105 @@ const links = [
 
 export default function MainNavbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+
     const pathname = usePathname();
 
     const isActive = (href) =>
-        href === "/" ? pathname === href : pathname?.startsWith(href);
+        href === "/"
+            ? pathname === href
+            : pathname?.startsWith(href);
 
     return (
-        <header className="sticky top-0 z-50 border-b border-brand-rose/45 bg-brand-blush/95 shadow-sm shadow-brand-ink/12 backdrop-blur-xl">
-            <nav className="container mx-auto flex h-18 items-center justify-between gap-3 px-4 sm:h-20 sm:px-6 lg:px-8">
-                <div className="flex min-w-0 items-center gap-3">
+        <header className="sticky top-0 z-50 border-b border-brand-rose/30 bg-brand-blush/80 backdrop-blur-2xl">
+            {/* Bottom Glow */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-brand-primary/50 to-transparent" />
+
+            <nav className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
+                {/* Left */}
+                <div className="flex items-center gap-3">
                     <button
                         type="button"
-                        aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-                        aria-expanded={isMenuOpen}
-                        onClick={() => setIsMenuOpen((open) => !open)}
-                        className="flex size-10 shrink-0 items-center justify-center rounded-full border border-brand-rose/50 bg-brand-blush text-brand-ink shadow-sm transition hover:border-brand-rose hover:bg-brand-rose/25 lg:hidden"
+                        aria-label="Toggle Menu"
+                        onClick={() =>
+                            setIsMenuOpen(!isMenuOpen)
+                        }
+                        className="flex size-11 items-center justify-center rounded-full border border-brand-rose/50 bg-white/60 shadow-sm transition hover:bg-white lg:hidden"
                     >
-                        {isMenuOpen ? <X size={21} /> : <Menu size={21} />}
+                        {isMenuOpen ? (
+                            <X size={20} />
+                        ) : (
+                            <Menu size={20} />
+                        )}
                     </button>
 
                     <Link
                         href="/"
-                        onClick={() => setIsMenuOpen(false)}
-                        className="group flex min-w-0 items-center gap-2.5"
-                        aria-label="StartupForge home"
+                        className="group flex items-center gap-3"
                     >
-                        <span className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-brand-blush shadow-md shadow-brand-ink/15 ring-1 ring-brand-rose/60 transition-transform group-hover:scale-105">
+                        {/* Logo */}
+                        <div className="relative flex size-14 items-center justify-center overflow-hidden rounded-3xl bg-linear-to-br from-brand-primary via-brand-accent to-brand-primary shadow-xl shadow-brand-primary/20 ring-1 ring-white/30 transition-all duration-300 group-hover:scale-105">
                             <Image
                                 src="/logo.png"
-                                alt="StartupForge logo"
-                                width={48}
-                                height={48}
-                                className="h-full w-full object-contain p-1"
+                                alt="StartupForge"
+                                width={50}
+                                height={50}
+                                className="object-contain p-1"
                                 priority
                             />
-                        </span>
-                        <span className="truncate text-xl font-black text-brand-ink sm:text-2xl">
-                            StartupForge
-                        </span>
+                        </div>
+
+                        <div>
+                            <h1 className="text-2xl font-black tracking-tight text-brand-ink">
+                                StartupForge
+                            </h1>
+
+                            <p className="-mt-1 text-xs font-medium text-brand-plum/70">
+                                Build Startup Teams
+                            </p>
+                        </div>
                     </Link>
+
+                    {/* Badge */}
+                    <div className="hidden xl:block">
+                        <span className="rounded-full border border-brand-rose/50 bg-white/60 px-3 py-1 text-xs font-semibold text-brand-plum backdrop-blur">
+                            🚀 Launch Faster
+                        </span>
+                    </div>
                 </div>
 
-                <div className="hidden items-center gap-1 rounded-full border border-brand-rose/55 bg-brand-rose/25 p-1 lg:flex">
+                {/* Desktop Nav */}
+                <div className="hidden lg:flex items-center gap-1 rounded-full border border-brand-rose/40 bg-white/60 p-1.5 shadow-lg shadow-brand-ink/5 backdrop-blur-xl">
                     {links.map((link) => (
                         <Link
                             key={link.href}
                             href={link.href}
-                            className={`flex h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-all ${isActive(link.href)
-                                ? "bg-brand-blush text-brand-ink shadow-sm ring-1 ring-brand-rose/50"
-                                : "text-brand-plum hover:bg-brand-blush/80 hover:text-brand-ink"
+                            className={`flex h-11 items-center gap-2 rounded-full px-5 text-sm font-semibold transition-all ${isActive(link.href)
+                                    ? "bg-brand-ink text-white shadow-md shadow-brand-ink/15"
+                                    : "text-brand-plum hover:bg-white hover:text-brand-ink"
                                 }`}
                         >
-                            <link.icon
-                                size={17}
-                                strokeWidth={2.2}
-                            />
+                            <link.icon size={17} />
                             {link.label}
                         </Link>
                     ))}
                 </div>
 
-                <div className="hidden items-center gap-2 min-[430px]:flex">
+                {/* Right */}
+                <div className="hidden min-[430px]:flex items-center gap-3">
                     <Link
                         href="/login"
-                        className="hidden h-11 items-center gap-2 rounded-full border border-brand-rose/50 bg-brand-blush/70 px-5 text-sm font-semibold text-brand-plum transition hover:border-brand-rose hover:bg-brand-rose/25 hover:text-brand-ink sm:flex"
+                        className="hidden sm:flex h-11 items-center gap-2 rounded-full border border-brand-primary/30 bg-white/70 px-5 text-sm font-semibold text-brand-ink backdrop-blur transition-all hover:-translate-y-0.5 hover:border-brand-primary hover:shadow-md"
                     >
-                        <LogIn
-                            size={17}
-                            strokeWidth={2.2}
-                        />
+                        <LogIn size={17} />
                         Login
                     </Link>
 
                     <Link
                         href="/register"
-                        className="flex h-11 items-center gap-2 rounded-full bg-brand-ink px-5 text-sm font-semibold text-white shadow-lg shadow-brand-ink/20 transition hover:bg-brand-plum"
+                        className="flex h-11 items-center gap-2 rounded-full bg-linear-to-r from-brand-primary to-brand-accent px-6 text-sm font-semibold text-white shadow-lg shadow-brand-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-primary/40"
                     >
                         Get Started
+
                         <ChevronRight
                             size={17}
                             strokeWidth={2.4}
@@ -119,63 +142,63 @@ export default function MainNavbar() {
                 </div>
             </nav>
 
-            {isMenuOpen && (
-                <div className="border-t border-brand-rose/45 bg-brand-blush/98 shadow-xl shadow-brand-ink/12 lg:hidden">
-                    <div className="container mx-auto grid gap-2 px-4 py-5 sm:px-6">
+            {/* Mobile Menu */}
+            <div
+                className={`overflow-hidden transition-all duration-300 lg:hidden ${isMenuOpen
+                        ? "max-h-125"
+                        : "max-h-0"
+                    }`}
+            >
+                <div className="border-t border-brand-rose/40 bg-brand-blush/90 backdrop-blur-2xl">
+                    <div className="container mx-auto space-y-2 px-4 py-5">
                         {links.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                onClick={() => setIsMenuOpen(false)}
-                                className={`flex min-h-14 items-center justify-between rounded-2xl border px-4 text-base font-semibold transition-colors ${isActive(link.href)
-                                    ? "border-brand-ink bg-brand-ink text-white"
-                                    : "border-brand-rose/50 bg-brand-blush/75 text-brand-plum hover:border-brand-rose hover:bg-brand-rose/25 hover:text-brand-ink"
+                                onClick={() =>
+                                    setIsMenuOpen(false)
+                                }
+                                className={`flex min-h-14 items-center justify-between rounded-2xl border px-4 text-base font-semibold transition ${isActive(link.href)
+                                        ? "border-brand-ink bg-brand-ink text-white"
+                                        : "border-brand-rose/50 bg-white/60 text-brand-plum hover:bg-white"
                                     }`}
                             >
                                 <span className="flex items-center gap-3">
-                                    <link.icon
-                                        size={19}
-                                        strokeWidth={2.2}
-                                    />
+                                    <link.icon size={18} />
                                     {link.label}
                                 </span>
-                                <ChevronRight
-                                    size={18}
-                                    strokeWidth={2.3}
-                                />
+
+                                <ChevronRight size={18} />
                             </Link>
                         ))}
 
-                        <div className="mt-3 grid gap-3 sm:hidden">
+                        <div className="grid gap-3 pt-3 sm:hidden">
                             <Link
                                 href="/login"
-                                onClick={() => setIsMenuOpen(false)}
-                                className="flex h-12 items-center justify-center gap-2 rounded-full border border-brand-rose/50 bg-brand-blush/70 font-semibold text-brand-plum hover:border-brand-rose hover:bg-brand-rose/25"
+                                onClick={() =>
+                                    setIsMenuOpen(false)
+                                }
+                                className="flex h-12 items-center justify-center gap-2 rounded-full border border-brand-primary/30 bg-white/70 font-semibold text-brand-ink"
                             >
-                                <LogIn
-                                    size={17}
-                                    strokeWidth={2.2}
-                                />
+                                <LogIn size={17} />
                                 Login
                             </Link>
 
                             <Link
                                 href="/register"
-                                onClick={() => setIsMenuOpen(false)}
-                                className="flex h-12 items-center justify-center gap-2 rounded-full bg-brand-ink font-semibold text-white shadow-lg shadow-brand-ink/20 hover:bg-brand-plum"
+                                onClick={() =>
+                                    setIsMenuOpen(false)
+                                }
+                                className="flex h-12 items-center justify-center gap-2 rounded-full bg-linear-to-r from-brand-primary to-brand-accent font-semibold text-white"
                             >
                                 Get Started
-                                <ChevronRight
-                                    size={17}
-                                    strokeWidth={2.4}
-                                />
+
+                                <ChevronRight size={17} />
                             </Link>
                         </div>
                     </div>
                 </div>
-            )}
+            </div>
         </header>
     );
 }
-
-

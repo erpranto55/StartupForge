@@ -20,6 +20,14 @@
   --font-mono: var(--font-geist-mono);
 }
 
+@theme {
+  --color-brand-ink: #15173d;
+  --color-brand-primary: #982598;
+  --color-brand-accent: #e491c9;
+  --color-brand-blush: #f1e9e9;
+  --color-brand-plum: #6d2673;
+}
+
 * {
   box-sizing: border-box;
 }
