@@ -2,6 +2,7 @@ import FeaturedOpportunities from "@/components/home/FeaturedOpportunities";
 import FeaturedStartups from "@/components/home/FeaturedStartups";
 import HeroSection from "@/components/home/HeroSection";
 import StartupStatistics from "@/components/home/StartupStatistics";
+import WhyJoinStartupForge from "@/components/home/WhyJoinStartupForge";
 import Footer from "@/components/shared/Footer";
 import MainNavbar from "@/components/shared/Navbar";
 
@@ -13,6 +14,7 @@ export default function Home() {
       <StartupStatistics />
       <FeaturedStartups />
       <FeaturedOpportunities />
+      <WhyJoinStartupForge />
       <Footer />
     </div>
   );
