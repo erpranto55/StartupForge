@@ -93,12 +93,7 @@ export default function MainNavbar() {
                         </div>
                     </Link>
 
-                    {/* Badge */}
-                    <div className="hidden xl:block">
-                        <span className="rounded-full border border-brand-rose/50 bg-white/60 px-3 py-1 text-xs font-semibold text-brand-plum backdrop-blur">
-                            🚀 Launch Faster
-                        </span>
-                    </div>
+                    
                 </div>
 
                 {/* Desktop Nav */}

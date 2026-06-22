@@ -1,4 +1,5 @@
 import HeroSection from "@/components/home/HeroSection";
+import StartupStatistics from "@/components/home/StartupStatistics";
 import Footer from "@/components/shared/Footer";
 import MainNavbar from "@/components/shared/Navbar";
 
@@ -7,7 +8,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col bg-background">
       <MainNavbar />
       <HeroSection />
-      <main className="flex-1" />
+      <StartupStatistics />
       <Footer />
     </div>
   );
