@@ -10,19 +10,22 @@
   },
   "dependencies": {
     "@gravity-ui/icons": "^2.18.0",
+    "@heroui/button": "^2.2.32",
+    "@heroui/input": "^2.4.33",
     "@heroui/navbar": "^2.2.30",
     "@heroui/react": "^3.2.1",
+    "@heroui/select": "^2.4.33",
     "@heroui/styles": "^3.2.1",
     "@hookform/resolvers": "^5.4.0",
-    "@tanstack/react-query": "^5.101.0",
-    "axios": "^1.18.0",
+    "@tanstack/react-query": "^5.101.1",
+    "axios": "^1.18.1",
     "clsx": "^2.1.1",
-    "framer-motion": "^12.40.0",
-    "lucide-react": "^1.3.0",
-    "motion": "^12.40.0",
+    "framer-motion": "^12.41.0",
+    "lucide-react": "^1.21.0",
+    "motion": "^12.41.0",
     "next": "16.2.9",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "react-hook-form": "^7.80.0",
     "react-icons": "^5.6.0",
     "react-toastify": "^11.1.0",
@@ -30,10 +33,10 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.3.1",
     "babel-plugin-react-compiler": "1.0.0",
-    "eslint": "^9",
+    "eslint": "^10.5.0",
     "eslint-config-next": "16.2.9",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4.3.1"
   }
 }
