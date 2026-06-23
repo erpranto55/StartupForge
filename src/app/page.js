@@ -10,14 +10,12 @@ import MainNavbar from "@/components/shared/Navbar";
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <MainNavbar />
       <HeroSection />
       <StartupStatistics />
       <FeaturedStartups />
       <FeaturedOpportunities />
       <WhyJoinStartupForge />
       <Testimonials />
-      <Footer />
     </div>
   );
 }
