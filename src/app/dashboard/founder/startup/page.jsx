@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { PlusCircle, Rocket } from "lucide-react";
 
 import axios from "@/lib/axios";
+import { toast } from "react-toastify";
 import useAuth from "@/hooks/useAuth";
 
 export default function StartupPage() {
@@ -35,6 +36,26 @@ export default function StartupPage() {
 
         loadStartup();
     }, [user]);
+
+    const handleDelete = async (id) => {
+        const confirmDelete = window.confirm(
+            "Are you sure you want to delete this startup?"
+        );
+
+        if (!confirmDelete) return;
+
+        try {
+            await axios.delete(`/api/startups/${id}`);
+
+            toast.success("Startup deleted successfully");
+
+            setStartup(null);
+        } catch (error) {
+            console.error(error);
+
+            toast.error("Failed to delete startup");
+        }
+    };
 
     if (loading || pageLoading) {
         return (
@@ -104,11 +125,19 @@ export default function StartupPage() {
                             <p>{startup.description}</p>
 
                             <div className="pt-3 flex gap-3">
-                                <button className="rounded-lg bg-blue-600 px-5 py-2 text-white">
-                                    Edit
-                                </button>
+                                
 
-                                <button className="rounded-lg bg-red-600 px-5 py-2 text-white">
+                                <Link
+                                    href={`/dashboard/founder/startup/edit/${startup._id}`}
+                                    className="rounded-xl bg-blue-600 px-6 py-3 text-white hover:bg-blue-700"
+                                >
+                                    Edit
+                                </Link>
+
+                                <button
+                                    onClick={() => handleDelete(startup._id)}
+                                    className="rounded-xl bg-red-600 px-6 py-3 text-white"
+                                >
                                     Delete
                                 </button>
                             </div>
