@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 import {
@@ -12,13 +13,63 @@ import {
     ArrowRight,
 } from "lucide-react";
 
+import { toast } from "react-toastify";
+import { authClient } from "@/lib/auth-client";
+
 export default function LoginForm() {
+    const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    const searchParams = useSearchParams();
 
-    const onSubmit = (data) => {
-        console.log(data);
+    useEffect(() => {
+        const error = searchParams.get("error");
+        if (error) {
+            toast.error(`Authentication error: ${error.replace(/_/g, " ")}`);
+        }
+    }, [searchParams]);
+
+    const onSubmit = async (data) => {
+        try {
+            setLoading(true);
+
+            const result = await authClient.signIn.email(
+                {
+                    email: data.email,
+                    password: data.password,
+                },
+                {
+                    onSuccess: async () => {
+                        // Generate JWT Cookie
+                        await fetch(
+                            "http://localhost:5000/api/custom-auth/jwt",
+                            {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({ email: data.email }),
+                                credentials: "include",
+                            }
+                        );
+
+                        toast.success("Login Successful");
+
+                        router.push("/dashboard");
+                    },
+
+                    onError: (ctx) => {
+                        toast.error(ctx.error.message);
+                    },
+                }
+            );
+        } catch (err) {
+            toast.error(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -50,12 +101,13 @@ export default function LoginForm() {
                         />
 
                         <input
-                            {...register("email")}
+                            {...register("email", { required: "Email is required" })}
                             type="email"
                             placeholder="Your Email"
                             className="h-12 w-full rounded-xl border border-gray-200 pl-12 pr-4 outline-none transition focus:border-brand-primary"
                         />
                     </div>
+                    {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>}
                 </div>
 
                 {/* Password */}
@@ -80,7 +132,7 @@ export default function LoginForm() {
                         />
 
                         <input
-                            {...register("password")}
+                            {...register("password", { required: "Password is required" })}
                             type={
                                 showPassword
                                     ? "text"
@@ -104,6 +156,7 @@ export default function LoginForm() {
                             )}
                         </button>
                     </div>
+                    {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>}
                 </div>
 
                 {/* Login Button */}
@@ -111,7 +164,8 @@ export default function LoginForm() {
                     type="submit"
                     className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-primary font-semibold text-white transition hover:bg-[#851f85]"
                 >
-                    Login
+                    {loading ? "Logging In..." : "Login"}
+
                     <ArrowRight size={18} />
                 </button>
 
@@ -127,6 +181,18 @@ export default function LoginForm() {
                 {/* Google */}
                 <button
                     type="button"
+                    onClick={async () => {
+                        try {
+                            await authClient.signIn.social({
+                                provider: "google",
+                                callbackURL: "http://localhost:3000/dashboard",
+                                errorURL: "http://localhost:3000/register",
+                            });
+                        } catch (err) {
+                            console.error(err);
+                            toast.error("Google login failed");
+                        }
+                    }}
                     className="h-12 w-full rounded-xl border border-gray-200 font-medium transition hover:bg-gray-50"
                 >
                     Continue with Google

@@ -1,4 +1,5 @@
 import RegisterForm from "@/components/auth/RegisterForm";
+import { Suspense } from "react";
 
 export default function RegisterPage() {
     return (
@@ -64,7 +65,9 @@ export default function RegisterPage() {
 
                     {/* Right Side */}
                     <div className="flex items-center justify-center p-6 md:p-12">
-                        <RegisterForm />
+                        <Suspense fallback={<div>Loading form...</div>}>
+                            <RegisterForm />
+                        </Suspense>
                     </div>
                 </div>
             </div>

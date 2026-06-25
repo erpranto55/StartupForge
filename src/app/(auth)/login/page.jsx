@@ -1,4 +1,5 @@
 import LoginForm from "@/components/auth/LoginForm";
+import { Suspense } from "react";
 
 export default function LoginPage() {
     return (
@@ -61,7 +62,9 @@ export default function LoginPage() {
 
                     {/* Right Side */}
                     <div className="flex items-center justify-center p-6 md:p-12">
-                        <LoginForm />
+                        <Suspense fallback={<div>Loading form...</div>}>
+                            <LoginForm />
+                        </Suspense>
                     </div>
                 </div>
             </div>

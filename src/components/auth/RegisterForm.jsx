@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { signUp } from "@/lib/auth-client";
+import { signUp, authClient } from "@/lib/auth-client";
 import { toast } from "react-toastify";
 
 import {
@@ -14,7 +14,8 @@ import {
     Image as ImageIcon,
 } from "lucide-react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function RegisterForm() {
     const [showPassword, setShowPassword] = useState(false);
@@ -23,7 +24,19 @@ export default function RegisterForm() {
     const {
         register,
         handleSubmit,
+        watch,
+        formState: { errors }
     } = useForm();
+    
+    const searchParams = useSearchParams();
+    const selectedRole = watch("role") || "collaborator";
+
+    useEffect(() => {
+        const error = searchParams.get("error");
+        if (error) {
+            toast.error(`Authentication error: ${error.replace(/_/g, " ")}`);
+        }
+    }, [searchParams]);
 
     const onSubmit = async (data) => {
         setLoading(true);
@@ -100,12 +113,13 @@ export default function RegisterForm() {
                         />
 
                         <input
-                            {...register("name")}
+                            {...register("name", { required: "Name is required" })}
                             type="text"
                             placeholder="Your Name"
                             className="h-12 w-full rounded-xl border border-gray-200 pl-12 pr-4 outline-none transition focus:border-brand-primary"
                         />
                     </div>
+                    {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>}
                 </div>
 
                 {/* Email */}
@@ -121,12 +135,13 @@ export default function RegisterForm() {
                         />
 
                         <input
-                            {...register("email")}
+                            {...register("email", { required: "Email is required" })}
                             type="email"
                             placeholder="Your Email"
                             className="h-12 w-full rounded-xl border border-gray-200 pl-12 pr-4 outline-none transition focus:border-brand-primary"
                         />
                     </div>
+                    {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>}
                 </div>
 
                 {/* Image URL */}
@@ -142,12 +157,13 @@ export default function RegisterForm() {
                         />
 
                         <input
-                            {...register("image")}
+                            {...register("image", { required: "Image URL is required" })}
                             type="text"
                             placeholder="https://..."
                             className="h-12 w-full rounded-xl border border-gray-200 pl-12 pr-4 outline-none transition focus:border-brand-primary"
                         />
                     </div>
+                    {errors.image && <p className="mt-1 text-sm text-red-500">{errors.image.message}</p>}
                 </div>
 
                 {/* Role */}
@@ -157,7 +173,7 @@ export default function RegisterForm() {
                     </label>
 
                     <select
-                        {...register("role")}
+                        {...register("role", { required: "Role is required" })}
                         className="h-12 w-full rounded-xl border border-gray-200 px-4 outline-none transition focus:border-brand-primary"
                     >
                         <option value="">
@@ -172,6 +188,7 @@ export default function RegisterForm() {
                             Collaborator
                         </option>
                     </select>
+                    {errors.role && <p className="mt-1 text-sm text-red-500">{errors.role.message}</p>}
                 </div>
 
                 {/* Password */}
@@ -188,11 +205,18 @@ export default function RegisterForm() {
 
                         <input
                             {...register("password", {
-                                required: true,
-                                minLength: 6,
-                                pattern:
-                                    /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/,
+                                required: "Password is required",
+                                minLength: { value: 6, message: "Password must be at least 6 characters" },
+                                pattern: {
+                                    value: /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/,
+                                    message: "Password requires one uppercase and one lowercase letter"
+                                },
                             })}
+                            type={
+                                showPassword
+                                    ? "text"
+                                    : "password"
+                            }
                             placeholder="********"
                             className="h-12 w-full rounded-xl border border-gray-200 pl-12 pr-12 outline-none transition focus:border-brand-primary"
                         />
@@ -213,6 +237,7 @@ export default function RegisterForm() {
                             )}
                         </button>
                     </div>
+                    {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>}
                 </div>
 
                 {/* Submit */}
@@ -234,6 +259,18 @@ export default function RegisterForm() {
                 {/* Google */}
                 <button
                     type="button"
+                    onClick={async () => {
+                        try {
+                            await authClient.signIn.social({
+                                provider: "google",
+                                callbackURL: `http://localhost:3000/dashboard?role=${selectedRole}`,
+                                errorURL: "http://localhost:3000/register",
+                            });
+                        } catch (err) {
+                            console.error(err);
+                            toast.error("Google login failed");
+                        }
+                    }}
                     className="h-12 w-full rounded-xl border border-gray-200 font-medium transition hover:bg-gray-50"
                 >
                     Continue with Google
