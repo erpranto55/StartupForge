@@ -25,6 +25,22 @@ export default function CreateStartupPage() {
         try {
             setLoading(true);
 
+            // Check if startup already exists
+
+            const existing = await axiosInstance.get(
+                `/api/startups/founder/${user.email}`
+            );
+
+            if (
+                existing.data.success &&
+                existing.data.data.length > 0
+            ) {
+                setLoading(false);
+                toast.error("You already created a startup");
+
+                return;
+            }
+
             // Upload logo
             const image = await uploadImage(data.logo[0]);
 
