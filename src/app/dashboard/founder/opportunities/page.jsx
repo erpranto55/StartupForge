@@ -15,7 +15,7 @@ import axios from "@/lib/axios";
 
 export default function OpportunitiesPage() {
     const { user, loading } = useAuth();
-
+    console.log("Logged in user:", user);
     const [opportunities, setOpportunities] = useState([]);
     const [pageLoading, setPageLoading] = useState(true);
 
@@ -24,16 +24,22 @@ export default function OpportunitiesPage() {
 
         const loadData = async () => {
             try {
+                console.log(
+                    "Fetching:",
+                    `/api/opportunities/founder/${user.email}`
+                );
+
                 const res = await axios.get(
                     `/api/opportunities/founder/${user.email}`
                 );
+
+                console.log("Response:", res.data);
 
                 if (res.data.success) {
                     setOpportunities(res.data.data);
                 }
             } catch (error) {
                 console.log(error);
-                toast.error("Failed to load opportunities");
             } finally {
                 setPageLoading(false);
             }
@@ -70,6 +76,8 @@ export default function OpportunitiesPage() {
             </div>
         );
     }
+
+    console.log("Current opportunities:", opportunities);
 
     return (
         <div>
