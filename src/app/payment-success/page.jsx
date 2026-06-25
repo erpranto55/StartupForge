@@ -1,0 +1,65 @@
+"use client";
+
+import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import axios from "axios";
+
+import Link from "next/link";
+import { CheckCircle2, ArrowRight } from "lucide-react";
+
+export default function PaymentSuccessPage() {
+
+    const searchParams = useSearchParams();
+
+    const email = searchParams.get("email");
+
+    useEffect(() => {
+        if (!email) return;
+
+        const savePayment = async () => {
+            await axios.post(
+                "http://localhost:5000/api/payments",
+                {
+                    user_email: email,
+                    amount: 29,
+                    payment_status: "Paid",
+                    transaction_id: crypto.randomUUID(),
+                }
+            );
+        };
+
+        savePayment();
+    }, [email]);
+    
+    return (
+        <section className="flex min-h-[80vh] items-center justify-center px-4">
+            <div className="w-full max-w-xl rounded-3xl border border-brand-rose/40 bg-white p-10 text-center shadow-xl">
+
+                <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-green-100">
+                    <CheckCircle2
+                        size={60}
+                        className="text-green-600"
+                    />
+                </div>
+
+                <h1 className="mt-6 text-4xl font-black text-brand-ink">
+                    Payment Successful
+                </h1>
+
+                <p className="mt-4 text-brand-plum">
+                    Congratulations!
+                    <br />
+                    Your StartupForge Premium Founder plan has been activated.
+                </p>
+
+                <Link
+                    href="/dashboard/founder"
+                    className="mt-8 inline-flex items-center gap-2 rounded-full bg-brand-ink px-6 py-3 font-semibold text-white transition hover:bg-brand-plum"
+                >
+                    Go to Dashboard
+                    <ArrowRight size={18} />
+                </Link>
+            </div>
+        </section>
+    );
+}
