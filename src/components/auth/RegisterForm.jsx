@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useForm } from "react-hook-form";
+import { signUp } from "@/lib/auth-client";
+import { toast } from "react-toastify";
 
 import {
     Eye,
@@ -16,14 +18,59 @@ import { useState } from "react";
 
 export default function RegisterForm() {
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const {
         register,
         handleSubmit,
     } = useForm();
 
-    const onSubmit = (data) => {
-        console.log(data);
+    const onSubmit = async (data) => {
+        setLoading(true);
+        try {
+            const result = await signUp.email({
+                email: data.email,
+                password: data.password,
+                name: data.name,
+            });
+
+            console.log(result);
+
+            if (result.error) {
+                toast.error(result.error.message);
+                return;
+            }
+
+            const userData = {
+                name: data.name,
+                email: data.email,
+                image: data.image,
+                role: data.role,
+                isBlocked: false,
+            };
+
+            const response = await fetch(
+                "http://localhost:5000/api/users",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(userData),
+                }
+            );
+
+            const savedUser = await response.json();
+
+            console.log(savedUser);
+
+            toast.success("Registration Successful!");
+        } catch (error) {
+            toast.error(error.message || "Something went wrong");
+        }
+        finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -140,12 +187,12 @@ export default function RegisterForm() {
                         />
 
                         <input
-                            {...register("password")}
-                            type={
-                                showPassword
-                                    ? "text"
-                                    : "password"
-                            }
+                            {...register("password", {
+                                required: true,
+                                minLength: 6,
+                                pattern:
+                                    /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/,
+                            })}
                             placeholder="********"
                             className="h-12 w-full rounded-xl border border-gray-200 pl-12 pr-12 outline-none transition focus:border-brand-primary"
                         />
@@ -170,10 +217,11 @@ export default function RegisterForm() {
 
                 {/* Submit */}
                 <button
+                    disabled={loading}
                     type="submit"
-                    className="h-12 w-full rounded-xl bg-brand-primary font-semibold text-white transition hover:bg-brand-dark"
+                    className="h-12 w-full rounded-xl bg-brand-primary font-semibold text-white"
                 >
-                    Create Account
+                    {loading ? "Creating..." : "Create Account"}
                 </button>
 
                 {/* Divider */}
