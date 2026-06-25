@@ -80,13 +80,22 @@ export default function StartupPage() {
                     </p>
                 </div>
 
-                <Link
-                    href="/dashboard/founder/startup/create"
-                    className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-5 py-3 font-semibold text-white"
-                >
-                    <PlusCircle size={18} />
-                    Create Startup
-                </Link>
+                {!startup ? (
+                    <Link
+                        href="/dashboard/founder/startup/create"
+                        className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-5 py-3 font-semibold text-white"
+                    >
+                        <PlusCircle size={18} />
+                        Create Startup
+                    </Link>
+                ) : (
+                    <Link
+                        href={`/dashboard/founder/startup/edit/${startup._id}`}
+                        className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white"
+                    >
+                        Edit Startup
+                    </Link>
+                )}
             </div>
 
             {/* If startup exists */}
@@ -125,7 +134,7 @@ export default function StartupPage() {
                             <p>{startup.description}</p>
 
                             <div className="pt-3 flex gap-3">
-                                
+
 
                                 <Link
                                     href={`/dashboard/founder/startup/edit/${startup._id}`}
