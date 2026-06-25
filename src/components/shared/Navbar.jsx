@@ -9,11 +9,16 @@ import {
     BriefcaseBusiness,
     ChevronRight,
     Compass,
+    LayoutDashboard,
     LogIn,
+    LogOut,
     Menu,
     Rocket,
+    User,
     X,
 } from "lucide-react";
+import { useSession, authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const links = [
     {
@@ -42,6 +47,9 @@ export default function MainNavbar() {
         href === "/"
             ? pathname === href
             : pathname?.startsWith(href);
+
+    const router = useRouter();
+    const { data: session, isPending } = useSession();
 
     return (
         <header className="sticky top-0 z-50 border-b border-brand-rose/30 bg-brand-blush/80 backdrop-blur-2xl">
@@ -115,25 +123,60 @@ export default function MainNavbar() {
 
                 {/* Right */}
                 <div className="hidden min-[430px]:flex items-center gap-3">
-                    <Link
-                        href="/login"
-                        className="hidden sm:flex h-11 items-center gap-2 rounded-full border border-brand-primary/30 bg-white/70 px-5 text-sm font-semibold text-brand-ink backdrop-blur transition-all hover:-translate-y-0.5 hover:border-brand-primary hover:shadow-md"
-                    >
-                        <LogIn size={17} />
-                        Login
-                    </Link>
+                    {isPending ? (
+                        <div className="h-11 w-32 animate-pulse rounded-full bg-gray-200" />
+                    ) : session ? (
+                        <>
+                            <Link
+                                href="/dashboard"
+                                className="hidden sm:flex h-11 items-center gap-2 rounded-full border border-brand-primary/30 bg-white/70 px-5 text-sm font-semibold text-brand-ink backdrop-blur transition-all hover:-translate-y-0.5 hover:border-brand-primary hover:shadow-md"
+                            >
+                                <LayoutDashboard size={17} />
+                                Dashboard
+                            </Link>
 
-                    <Link
-                        href="/register"
-                        className="flex h-11 items-center gap-2 rounded-full bg-linear-to-r from-brand-primary to-brand-accent px-6 text-sm font-semibold text-white shadow-lg shadow-brand-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-primary/40"
-                    >
-                        Get Started
+                            <Link href="/profile" className="flex size-11 items-center justify-center overflow-hidden rounded-full border border-brand-primary/30 bg-white/70 shadow-sm transition hover:shadow-md hover:border-brand-primary">
+                                {session.user?.image ? (
+                                    <Image src={session.user.image} alt="Profile" width={44} height={44} className="h-full w-full object-cover" />
+                                ) : (
+                                    <User size={20} className="text-brand-ink" />
+                                )}
+                            </Link>
 
-                        <ChevronRight
-                            size={17}
-                            strokeWidth={2.4}
-                        />
-                    </Link>
+                            <button
+                                onClick={async () => {
+                                    await authClient.signOut();
+                                    router.push("/login");
+                                }}
+                                className="flex size-11 items-center justify-center rounded-full bg-red-50 text-red-500 transition-all hover:-translate-y-0.5 hover:bg-red-500 hover:text-white"
+                                title="Logout"
+                            >
+                                <LogOut size={18} />
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <Link
+                                href="/login"
+                                className="hidden sm:flex h-11 items-center gap-2 rounded-full border border-brand-primary/30 bg-white/70 px-5 text-sm font-semibold text-brand-ink backdrop-blur transition-all hover:-translate-y-0.5 hover:border-brand-primary hover:shadow-md"
+                            >
+                                <LogIn size={17} />
+                                Login
+                            </Link>
+
+                            <Link
+                                href="/register"
+                                className="flex h-11 items-center gap-2 rounded-full bg-linear-to-r from-brand-primary to-brand-accent px-6 text-sm font-semibold text-white shadow-lg shadow-brand-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-primary/40"
+                            >
+                                Get Started
+
+                                <ChevronRight
+                                    size={17}
+                                    strokeWidth={2.4}
+                                />
+                            </Link>
+                        </>
+                    )}
                 </div>
             </nav>
 
@@ -168,28 +211,70 @@ export default function MainNavbar() {
                         ))}
 
                         <div className="grid gap-3 pt-3 sm:hidden">
-                            <Link
-                                href="/login"
-                                onClick={() =>
-                                    setIsMenuOpen(false)
-                                }
-                                className="flex h-12 items-center justify-center gap-2 rounded-full border border-brand-primary/30 bg-white/70 font-semibold text-brand-ink"
-                            >
-                                <LogIn size={17} />
-                                Login
-                            </Link>
+                            {isPending ? (
+                                <div className="h-12 w-full animate-pulse rounded-full bg-gray-200" />
+                            ) : session ? (
+                                <>
+                                    <Link
+                                        href="/dashboard"
+                                        onClick={() =>
+                                            setIsMenuOpen(false)
+                                        }
+                                        className="flex h-12 items-center justify-center gap-2 rounded-full border border-brand-primary/30 bg-white/70 font-semibold text-brand-ink"
+                                    >
+                                        <LayoutDashboard size={17} />
+                                        Dashboard
+                                    </Link>
+                                    
+                                    <Link
+                                        href="/profile"
+                                        onClick={() =>
+                                            setIsMenuOpen(false)
+                                        }
+                                        className="flex h-12 items-center justify-center gap-2 rounded-full border border-brand-primary/30 bg-white/70 font-semibold text-brand-ink"
+                                    >
+                                        <User size={17} />
+                                        Profile
+                                    </Link>
 
-                            <Link
-                                href="/register"
-                                onClick={() =>
-                                    setIsMenuOpen(false)
-                                }
-                                className="flex h-12 items-center justify-center gap-2 rounded-full bg-linear-to-r from-brand-primary to-brand-accent font-semibold text-white"
-                            >
-                                Get Started
+                                    <button
+                                        onClick={async () => {
+                                            setIsMenuOpen(false);
+                                            await authClient.signOut();
+                                            router.push("/login");
+                                        }}
+                                        className="flex h-12 items-center justify-center gap-2 rounded-full bg-red-50 font-semibold text-red-500"
+                                    >
+                                        <LogOut size={17} />
+                                        Logout
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link
+                                        href="/login"
+                                        onClick={() =>
+                                            setIsMenuOpen(false)
+                                        }
+                                        className="flex h-12 items-center justify-center gap-2 rounded-full border border-brand-primary/30 bg-white/70 font-semibold text-brand-ink"
+                                    >
+                                        <LogIn size={17} />
+                                        Login
+                                    </Link>
 
-                                <ChevronRight size={17} />
-                            </Link>
+                                    <Link
+                                        href="/register"
+                                        onClick={() =>
+                                            setIsMenuOpen(false)
+                                        }
+                                        className="flex h-12 items-center justify-center gap-2 rounded-full bg-linear-to-r from-brand-primary to-brand-accent font-semibold text-white"
+                                    >
+                                        Get Started
+
+                                        <ChevronRight size={17} />
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
