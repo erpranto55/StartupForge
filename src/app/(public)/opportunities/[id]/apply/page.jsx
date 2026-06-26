@@ -2,7 +2,11 @@ import ApplyOpportunityForm from "@/components/opportunity/ApplyOpportunityForm"
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-export default function ApplyPage() {
+export default async function ApplyPage({
+    params,
+}) {
+    const { id } = await params;
+
     return (
         <div className="container mx-auto max-w-4xl px-4 py-12">
             <Link
@@ -24,7 +28,9 @@ export default function ApplyPage() {
             </div>
 
             <div className="mt-8">
-                <ApplyOpportunityForm />
+                <ApplyOpportunityForm
+                    opportunityId={id}
+                />
             </div>
         </div>
     );
