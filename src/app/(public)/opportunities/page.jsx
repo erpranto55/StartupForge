@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+
+import axios from "@/lib/axios";
 import Link from "next/link";
 
 import {
@@ -10,64 +12,59 @@ import {
     ArrowRight,
 } from "lucide-react";
 
-const opportunities = [
-    {
-        id: 1,
-        roleTitle: "Frontend Developer",
-        startupName: "AI Nexus",
-        requiredSkills: ["React", "Next.js", "Tailwind"],
-        workType: "Remote",
-        deadline: "2026-08-15",
-    },
-    {
-        id: 2,
-        roleTitle: "Backend Developer",
-        startupName: "FinPilot",
-        requiredSkills: ["Node.js", "Express", "MongoDB"],
-        workType: "Hybrid",
-        deadline: "2026-08-20",
-    },
-    {
-        id: 3,
-        roleTitle: "UI/UX Designer",
-        startupName: "HealthSync",
-        requiredSkills: ["Figma", "Design System"],
-        workType: "Remote",
-        deadline: "2026-08-25",
-    },
-    {
-        id: 4,
-        roleTitle: "Product Manager",
-        startupName: "EduSphere",
-        requiredSkills: ["Agile", "Roadmap"],
-        workType: "On Site",
-        deadline: "2026-08-30",
-    },
-];
-
 export default function OpportunitiesPage() {
     const [search, setSearch] = useState("");
-    const [filter, setFilter] = useState("All");
 
-    const filteredOpportunities = useMemo(() => {
-        return opportunities.filter((opportunity) => {
-            const matchesSearch =
-                opportunity.roleTitle
-                    .toLowerCase()
-                    .includes(search.toLowerCase()) ||
-                opportunity.requiredSkills
-                    .join(" ")
-                    .toLowerCase()
-                    .includes(search.toLowerCase());
+    const [filter, setFilter] =
+        useState("");
 
-            const matchesFilter =
-                filter === "All"
-                    ? true
-                    : opportunity.workType === filter;
+    const [opportunities, setOpportunities] =
+        useState([]);
 
-            return matchesSearch && matchesFilter;
-        });
-    }, [search, filter]);
+    const [loading, setLoading] =
+        useState(true);
+
+    const [page, setPage] =
+        useState(1);
+
+    const [totalPages, setTotalPages] =
+        useState(1);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                setLoading(true);
+
+                const res = await axios.get(
+                    `/api/opportunities?page=${page}&search=${search}&workType=${filter}`
+                );
+
+                if (res.data.success) {
+                    setOpportunities(res.data.data);
+
+                    setTotalPages(
+                        res.data.totalPages
+                    );
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadData();
+    }, [page, search, filter]);
+
+    if (loading) {
+        return (
+            <div className="flex min-h-[60vh] items-center justify-center">
+                <p className="text-lg font-medium">
+                    Loading opportunities...
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="container mx-auto px-4 py-16">
@@ -108,19 +105,40 @@ export default function OpportunitiesPage() {
                     }
                     className="rounded-2xl border border-gray-200 bg-white px-4 shadow-sm"
                 >
-                    <option>All</option>
-                    <option>Remote</option>
-                    <option>Hybrid</option>
-                    <option>On Site</option>
+                    <option value="">All</option>
+
+                    <option value="Remote">
+                        Remote
+                    </option>
+
+                    <option value="Hybrid">
+                        Hybrid
+                    </option>
+
+                    <option value="On Site">
+                        On Site
+                    </option>
                 </select>
             </div>
 
-            {/* Grid */}
-            <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                {filteredOpportunities.map(
-                    (opportunity) => (
+            {opportunities.length === 0 && (
+                <div className="mt-16 rounded-3xl bg-white p-12 text-center shadow">
+                    <h2 className="text-2xl font-bold">
+                        No Opportunities Found
+                    </h2>
+
+                    <p className="mt-2 text-gray-500">
+                        Try another search or filter.
+                    </p>
+                </div>
+            )}
+
+
+            {opportunities.length > 0 && (
+                <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {opportunities.map((opportunity) => (
                         <div
-                            key={opportunity.id}
+                            key={opportunity._id}
                             className="rounded-3xl bg-white p-6 shadow-sm transition hover:-translate-y-2 hover:shadow-lg"
                         >
                             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-primary/10">
@@ -128,54 +146,83 @@ export default function OpportunitiesPage() {
                             </div>
 
                             <h2 className="mt-5 text-2xl font-bold text-brand-ink">
-                                {
-                                    opportunity.roleTitle
-                                }
+                                {opportunity.role_title}
                             </h2>
 
                             <p className="mt-2 text-gray-500">
-                                {
-                                    opportunity.startupName
-                                }
+                                {opportunity.startup_name}
                             </p>
 
                             <div className="mt-5 flex flex-wrap gap-2">
-                                {opportunity.requiredSkills.map(
-                                    (skill) => (
-                                        <span
-                                            key={skill}
-                                            className="rounded-full bg-brand-primary/10 px-3 py-1 text-sm text-brand-primary"
-                                        >
-                                            {skill}
-                                        </span>
-                                    )
-                                )}
+                                {(
+                                    Array.isArray(opportunity.required_skills)
+                                        ? opportunity.required_skills
+                                        : opportunity.required_skills
+                                            ?.split(",")
+                                            .map((skill) => skill.trim()) || []
+                                ).map((skill) => (
+                                    <span
+                                        key={skill}
+                                        className="rounded-full bg-brand-primary/10 px-3 py-1 text-sm text-brand-primary"
+                                    >
+                                        {skill}
+                                    </span>
+                                ))}
                             </div>
 
                             <div className="mt-5 flex items-center gap-2 text-gray-500">
                                 <CalendarDays size={16} />
-                                Deadline:
-                                {opportunity.deadline}
+                                <span>
+                                    Deadline:{" "}
+                                    {new Date(
+                                        opportunity.deadline
+                                    ).toLocaleDateString()}
+                                </span>
                             </div>
 
                             <div className="mt-4">
                                 <span className="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700">
-                                    {
-                                        opportunity.workType
-                                    }
+                                    {opportunity.work_type}
                                 </span>
                             </div>
 
                             <Link
-                                href={`/opportunities/${opportunity.id}`}
+                                href={`/opportunities/${opportunity._id}`}
                                 className="mt-6 inline-flex items-center gap-2 font-semibold text-brand-primary"
                             >
                                 View Details
                                 <ArrowRight size={18} />
                             </Link>
                         </div>
-                    )
-                )}
+                    ))}
+                </div>
+            )}
+
+
+            <div className="mt-12 flex justify-center gap-3">
+                <button
+                    disabled={page === 1}
+                    onClick={() =>
+                        setPage(page - 1)
+                    }
+                    className="rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                    Previous
+                </button>
+
+                <span className="flex items-center px-4">
+                    {page} / {totalPages}
+                </span>
+
+                <button
+                    disabled={page === totalPages}
+                    onClick={() =>
+                        setPage(page + 1)
+                    }
+                    className="rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                    Next
+                </button>
             </div>
         </div>
     );
