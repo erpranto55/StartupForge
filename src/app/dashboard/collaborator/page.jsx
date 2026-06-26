@@ -1,10 +1,78 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 import {
     BriefcaseBusiness,
     Clock3,
     CheckCircle,
 } from "lucide-react";
 
+import axios from "@/lib/axios";
+import useAuth from "@/hooks/useAuth";
+
 export default function CollaboratorDashboard() {
+    const { user, loading } = useAuth();
+
+    const [stats, setStats] = useState({
+        total: 0,
+        pending: 0,
+        accepted: 0,
+    });
+
+    const [pageLoading, setPageLoading] =
+        useState(true);
+
+    useEffect(() => {
+        if (!user?.email) return;
+
+        const loadStats = async () => {
+            try {
+                const res = await axios.get(
+                    `/api/applications/user/${user.email}`
+                );
+
+                if (res.data.success) {
+                    const applications =
+                        res.data.data;
+
+                    setStats({
+                        total:
+                            applications.length,
+
+                        pending:
+                            applications.filter(
+                                (app) =>
+                                    app.status ===
+                                    "Pending"
+                            ).length,
+
+                        accepted:
+                            applications.filter(
+                                (app) =>
+                                    app.status ===
+                                    "Accepted"
+                            ).length,
+                    });
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setPageLoading(false);
+            }
+        };
+
+        loadStats();
+    }, [user]);
+
+    if (loading || pageLoading) {
+        return (
+            <div className="py-20 text-center">
+                Loading...
+            </div>
+        );
+    }
+
     return (
         <div>
             <h1 className="text-4xl font-black text-brand-ink">
@@ -16,43 +84,34 @@ export default function CollaboratorDashboard() {
             </p>
 
             <div className="mt-10 grid gap-6 md:grid-cols-3">
-                {/* Total Applications */}
                 <div className="rounded-3xl bg-white p-6 shadow-sm">
                     <BriefcaseBusiness className="text-brand-primary" />
 
                     <h3 className="mt-4 text-3xl font-bold">
-                        12
+                        {stats.total}
                     </h3>
 
-                    <p className="text-gray-500">
-                        Total Applications
-                    </p>
+                    <p>Total Applications</p>
                 </div>
 
-                {/* Pending */}
                 <div className="rounded-3xl bg-white p-6 shadow-sm">
                     <Clock3 className="text-yellow-500" />
 
                     <h3 className="mt-4 text-3xl font-bold">
-                        5
+                        {stats.pending}
                     </h3>
 
-                    <p className="text-gray-500">
-                        Pending Reviews
-                    </p>
+                    <p>Pending Reviews</p>
                 </div>
 
-                {/* Accepted */}
                 <div className="rounded-3xl bg-white p-6 shadow-sm">
                     <CheckCircle className="text-green-600" />
 
                     <h3 className="mt-4 text-3xl font-bold">
-                        3
+                        {stats.accepted}
                     </h3>
 
-                    <p className="text-gray-500">
-                        Accepted Applications
-                    </p>
+                    <p>Accepted Applications</p>
                 </div>
             </div>
         </div>
