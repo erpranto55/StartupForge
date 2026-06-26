@@ -1,33 +1,66 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+
+import axios from "@/lib/axios";
+
 import Link from "next/link";
 import {
     ArrowLeft,
-    BriefcaseBusiness,
     Building2,
     CalendarDays,
     Clock3,
     Globe,
+    BriefcaseBusiness,
 } from "lucide-react";
 
 export default function OpportunityDetailsPage() {
-    const opportunity = {
-        id: 1,
-        roleTitle: "Frontend Developer",
-        startupName: "AI Nexus",
-        description:
-            "We are looking for a passionate Frontend Developer to help build modern web applications using React and Next.js.",
-        requiredSkills: [
-            "React",
-            "Next.js",
-            "Tailwind CSS",
-        ],
-        workType: "Remote",
-        commitmentLevel: "Part Time",
-        deadline: "2026-08-15",
-    };
+    const { id } = useParams();
+
+    const [opportunity, setOpportunity] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadOpportunity = async () => {
+            try {
+                const res = await axios.get(
+                    `/api/opportunities/${id}`
+                );
+
+                if (res.data.success) {
+                    setOpportunity(res.data.data);
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id) {
+            loadOpportunity();
+        }
+    }, [id]);
+
+    if (loading) {
+        return (
+            <div className="flex min-h-[60vh] items-center justify-center">
+                Loading...
+            </div>
+        );
+    }
+
+    if (!opportunity) {
+        return (
+            <div className="flex min-h-[60vh] items-center justify-center">
+                Opportunity not found.
+            </div>
+        );
+    }
 
     return (
         <div className="container mx-auto px-4 py-12">
-            {/* Back */}
             <Link
                 href="/opportunities"
                 className="inline-flex items-center gap-2 text-brand-primary"
@@ -36,28 +69,31 @@ export default function OpportunityDetailsPage() {
                 Back to Opportunities
             </Link>
 
-            {/* Hero */}
-            <div className="mt-6 rounded-4xl bg-[#15173D] p-10 text-white">
-               
+            <div className="mt-6 rounded-3xl bg-[#15173D] p-10 text-white">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10">
+                    <BriefcaseBusiness size={30} />
+                </div>
 
                 <h1 className="mt-6 text-5xl font-black">
-                    {opportunity.roleTitle}
+                    {opportunity.role_title}
                 </h1>
 
                 <p className="mt-3 text-white/70">
-                    {opportunity.startupName}
+                    {opportunity.startup_name}
                 </p>
             </div>
 
             <div className="mt-10 grid gap-8 lg:grid-cols-[2fr_1fr]">
-                {/* Main */}
+                {/* Left */}
+
                 <div className="rounded-3xl bg-white p-8 shadow-sm">
                     <h2 className="text-2xl font-bold text-brand-ink">
                         Role Description
                     </h2>
 
                     <p className="mt-5 leading-8 text-gray-600">
-                        {opportunity.description}
+                        {opportunity.description ||
+                            "No description provided."}
                     </p>
 
                     <h2 className="mt-10 text-2xl font-bold text-brand-ink">
@@ -65,7 +101,7 @@ export default function OpportunityDetailsPage() {
                     </h2>
 
                     <div className="mt-5 flex flex-wrap gap-3">
-                        {opportunity.requiredSkills.map(
+                        {opportunity.required_skills?.map(
                             (skill) => (
                                 <span
                                     key={skill}
@@ -78,7 +114,8 @@ export default function OpportunityDetailsPage() {
                     </div>
                 </div>
 
-                {/* Sidebar */}
+                {/* Right */}
+
                 <div className="rounded-3xl bg-white p-8 shadow-sm">
                     <h2 className="text-2xl font-bold text-brand-ink">
                         Opportunity Info
@@ -89,7 +126,7 @@ export default function OpportunityDetailsPage() {
                             <Building2 size={18} />
 
                             <span>
-                                {opportunity.startupName}
+                                {opportunity.startup_name}
                             </span>
                         </div>
 
@@ -97,7 +134,7 @@ export default function OpportunityDetailsPage() {
                             <Globe size={18} />
 
                             <span>
-                                {opportunity.workType}
+                                {opportunity.work_type}
                             </span>
                         </div>
 
@@ -106,7 +143,7 @@ export default function OpportunityDetailsPage() {
 
                             <span>
                                 {
-                                    opportunity.commitmentLevel
+                                    opportunity.commitment_level
                                 }
                             </span>
                         </div>
@@ -115,17 +152,16 @@ export default function OpportunityDetailsPage() {
                             <CalendarDays size={18} />
 
                             <span>
-                                Deadline:
-                                {" "}
-                                {
+                                Deadline:{" "}
+                                {new Date(
                                     opportunity.deadline
-                                }
+                                ).toLocaleDateString()}
                             </span>
                         </div>
                     </div>
 
                     <Link
-                        href={`/opportunities/${opportunity.id}/apply`}
+                        href={`/opportunities/${opportunity._id}/apply`}
                         className="mt-8 flex w-full items-center justify-center rounded-xl bg-brand-primary px-5 py-3 font-semibold text-white"
                     >
                         Apply Now
