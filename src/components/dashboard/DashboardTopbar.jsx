@@ -97,7 +97,7 @@ export default function DashboardTopbar({ role, customUser, onMenuClick }) {
 
                     {/* Name + role badge */}
                     <div className="hidden min-w-0 md:block">
-                        <p className="max-w-[120px] truncate text-xs font-semibold text-brand-ink">
+                        <p className="max-w-30 truncate text-xs font-semibold text-brand-ink">
                             {user?.name ?? "..."}
                         </p>
                         <span

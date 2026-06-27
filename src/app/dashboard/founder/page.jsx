@@ -6,6 +6,7 @@ import axios from "@/lib/axios";
 import useCustomUser from "@/hooks/useCustomUser";
 import StatsCard from "@/components/dashboard/StatsCard";
 import SkeletonCard from "@/components/dashboard/SkeletonCard";
+import Link from "next/link";
 
 export default function FounderDashboard() {
     const { customUser, loading: userLoading } = useCustomUser();
@@ -25,7 +26,9 @@ export default function FounderDashboard() {
                     setStats(res.data.data);
                 }
             } catch (error) {
-                console.error("Founder stats error:", error);
+                console.error(error);
+
+                toast.error("Failed to load dashboard statistics.");
             } finally {
                 setStatsLoading(false);
             }
@@ -106,13 +109,13 @@ export default function FounderDashboard() {
                             color: "bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white",
                         },
                     ].map((action) => (
-                        <a
+                        <Link
                             key={action.href}
                             href={action.href}
                             className={`flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${action.color}`}
                         >
                             {action.label}
-                        </a>
+                        </Link>
                     ))}
                 </div>
             </div>

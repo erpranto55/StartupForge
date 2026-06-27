@@ -27,11 +27,11 @@ export default function DashboardSidebar({ role, customUser, isOpen, onClose }) 
     const user = customUser;
     const initials = user?.name
         ? user.name
-              .split(" ")
-              .map((n) => n[0])
-              .join("")
-              .slice(0, 2)
-              .toUpperCase()
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .slice(0, 2)
+            .toUpperCase()
         : "?";
 
     const handleLogout = async () => {
@@ -46,7 +46,7 @@ export default function DashboardSidebar({ role, customUser, isOpen, onClose }) 
         } catch {
             // Still navigate away even if logout request fails
         }
-        router.push("/login");
+        router.replace("/login");
     };
 
     const isActive = (item) => {
@@ -57,7 +57,7 @@ export default function DashboardSidebar({ role, customUser, isOpen, onClose }) 
     };
 
     const SidebarContent = () => (
-        <div className="flex h-full flex-col bg-gradient-to-b from-[#1d1f4e] to-[#15173D] text-white">
+        <div className="flex h-full flex-col bg-linear-to-b from-[#1d1f4e] to-[#15173D] text-white">
             {/* ── Logo ── */}
             <div className="flex h-16 items-center gap-3 border-b border-white/10 px-5">
                 <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-brand-primary shadow-lg shadow-brand-primary/40">
@@ -101,11 +101,10 @@ export default function DashboardSidebar({ role, customUser, isOpen, onClose }) 
                                 <Link
                                     href={item.href}
                                     onClick={onClose}
-                                    className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
-                                        active
+                                    className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 ${active
                                             ? "bg-brand-primary text-white shadow-md shadow-brand-primary/40"
                                             : "text-white/60 hover:bg-white/8 hover:text-white"
-                                    }`}
+                                        }`}
                                 >
                                     <item.icon
                                         size={16}
