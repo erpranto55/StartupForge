@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useSession, authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import SafeAvatar from "@/components/profile/SafeAvatar";
 
 const links = [
     {
@@ -136,11 +137,12 @@ export default function MainNavbar() {
                             </Link>
 
                             <Link href="/profile" className="flex size-11 items-center justify-center overflow-hidden rounded-full border border-brand-primary/30 bg-white/70 shadow-sm transition hover:shadow-md hover:border-brand-primary">
-                                {session.user?.image ? (
-                                    <Image src={session.user.image} alt="Profile" width={44} height={44} className="h-full w-full object-cover" />
-                                ) : (
-                                    <User size={20} className="text-brand-ink" />
-                                )}
+                                <SafeAvatar
+                                    src={session.user?.image}
+                                    name={session.user?.name}
+                                    alt="Profile"
+                                    className="h-full w-full object-cover"
+                                />
                             </Link>
 
                             <button

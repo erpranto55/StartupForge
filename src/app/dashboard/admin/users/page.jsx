@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import SafeAvatar from "@/components/profile/SafeAvatar";
 import {
     Ban,
     CheckCircle,
@@ -181,16 +181,12 @@ export default function ManageUsersPage() {
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
                                                     <div className="relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-primary text-sm font-bold text-white">
-                                                        {user.image ? (
-                                                            <Image
-                                                                src={user.image}
-                                                                alt={user.name ?? ""}
-                                                                fill
-                                                                className="object-cover"
-                                                            />
-                                                        ) : (
-                                                            <span>{initials}</span>
-                                                        )}
+                                                         <SafeAvatar
+                                                             src={user.image}
+                                                             name={user.name}
+                                                             alt={user.name ?? ""}
+                                                             className="h-full w-full object-cover"
+                                                         />
                                                     </div>
                                                     <div className="min-w-0">
                                                         <p className="truncate font-semibold text-brand-ink">
