@@ -28,7 +28,9 @@ export default function DashboardBreadcrumb() {
             aria-label="Breadcrumb"
             className="flex items-center gap-1 text-xs text-gray-400"
         >
-            <Home size={12} className="shrink-0" />
+            <Link href="/" className="transition-colors hover:text-brand-primary" aria-label="Home">
+                <Home size={12} className="shrink-0" />
+            </Link>
 
             {segments.map((segment, index) => {
                 const href = "/" + segments.slice(0, index + 1).join("/");

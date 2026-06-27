@@ -14,6 +14,7 @@ import {
 import { Globe, LogoGithub } from "@gravity-ui/icons";
 
 import SafeAvatar from "@/components/profile/SafeAvatar";
+import DashboardShell from "@/components/dashboard/DashboardShell";
 
 export default function ProfilePage() {
     const { customUser, loading } = useCustomUser();
@@ -33,7 +34,8 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="mx-auto max-w-7xl px-4 py-8">
+        <DashboardShell role={customUser?.role} customUser={customUser}>
+            <div className="mx-auto max-w-7xl px-4 py-8">
 
             {/* ================= HERO ================= */}
 
@@ -552,5 +554,6 @@ export default function ProfilePage() {
             </div>
 
         </div>
+        </DashboardShell>
     );
 }

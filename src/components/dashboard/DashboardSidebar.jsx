@@ -46,20 +46,22 @@ export default function DashboardSidebar({ role, customUser, isOpen, onClose }) 
     const SidebarContent = () => (
         <div className="flex h-full flex-col bg-linear-to-b from-[#1d1f4e] to-[#15173D] text-white">
             <div className="flex h-16 items-center gap-3 border-b border-white/10 px-5">
-                <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-brand-primary shadow-lg shadow-brand-primary/40">
-                    <Image
-                        src="/logo.png"
-                        alt="StartupForge"
-                        width={28}
-                        height={28}
-                        className="object-contain p-0.5"
-                        priority
-                    />
-                </div>
-                <div className="min-w-0">
-                    <p className="text-sm font-black text-white">StartupForge</p>
-                    <p className="text-[10px] capitalize text-white/40">{role} Portal</p>
-                </div>
+                <Link href="/" className="flex items-center gap-3 group">
+                    <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-brand-primary shadow-lg shadow-brand-primary/40 transition-transform group-hover:scale-105">
+                        <Image
+                            src="/logo.png"
+                            alt="StartupForge"
+                            width={28}
+                            height={28}
+                            className="object-contain p-0.5"
+                            priority
+                        />
+                    </div>
+                    <div className="min-w-0">
+                        <p className="text-sm font-black text-white transition-colors group-hover:text-brand-primary">StartupForge</p>
+                        <p className="text-[10px] capitalize text-white/40">{role} Portal</p>
+                    </div>
+                </Link>
 
                 <button
                     type="button"

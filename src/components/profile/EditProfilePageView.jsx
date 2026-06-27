@@ -8,6 +8,7 @@ import axios from "@/lib/axios";
 import useCustomUser from "@/hooks/useCustomUser";
 import uploadImage from "@/utils/uploadImage";
 import SafeAvatar from "./SafeAvatar";
+import DashboardShell from "@/components/dashboard/DashboardShell";
 import {
     ArrowLeft,
     Mail,
@@ -134,7 +135,8 @@ export default function EditProfilePageView() {
     const role = customUser?.role || "collaborator";
 
     return (
-        <div className="mx-auto max-w-7xl px-4 py-8">
+        <DashboardShell role={role} customUser={customUser}>
+            <div className="mx-auto max-w-7xl px-4 py-8">
             <div className="mb-8 flex items-center justify-between">
                 <div>
                     <Link
@@ -381,5 +383,6 @@ export default function EditProfilePageView() {
                 </div>
             </form>
         </div>
+        </DashboardShell>
     );
 }
