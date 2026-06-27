@@ -1,7 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import MainNavbar from "@/components/shared/Navbar";
-import Footer from "@/components/shared/Footer";
+import ConditionalLayout from "@/components/shared/ConditionalLayout";
 import { ToastContainer } from "react-toastify";
 
 const geistSans = Geist({
@@ -27,12 +26,9 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <main className="flex-1 flex flex-col">
-          <MainNavbar />
-          {children}
-          <Footer />
-          <ToastContainer position="top-right" />
-        </main>
+        {/* ConditionalLayout suppresses the public Navbar/Footer on /dashboard/* */}
+        <ConditionalLayout>{children}</ConditionalLayout>
+        <ToastContainer position="top-right" autoClose={3000} />
       </body>
     </html>
   );

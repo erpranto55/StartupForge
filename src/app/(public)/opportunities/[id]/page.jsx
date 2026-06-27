@@ -101,16 +101,20 @@ export default function OpportunityDetailsPage() {
                     </h2>
 
                     <div className="mt-5 flex flex-wrap gap-3">
-                        {opportunity.required_skills?.map(
-                            (skill) => (
-                                <span
-                                    key={skill}
-                                    className="rounded-full bg-brand-primary/10 px-4 py-2 text-brand-primary"
-                                >
-                                    {skill}
-                                </span>
-                            )
-                        )}
+                        {(
+                            Array.isArray(opportunity.required_skills)
+                                ? opportunity.required_skills
+                                : opportunity.required_skills
+                                    ?.split(",")
+                                    .map(skill => skill.trim())
+                        ).map((skill) => (
+                            <span
+                                key={skill}
+                                className="rounded-full bg-brand-primary/10 px-4 py-2 text-brand-primary"
+                            >
+                                {skill}
+                            </span>
+                        ))}
                     </div>
                 </div>
 

@@ -1,103 +1,119 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-import {
-    BriefcaseBusiness,
-    Users,
-    CheckCircle,
-} from "lucide-react";
-
+import { BriefcaseBusiness, Users, CheckCircle } from "lucide-react";
 import axios from "@/lib/axios";
-import useAuth from "@/hooks/useAuth";
+import useCustomUser from "@/hooks/useCustomUser";
+import StatsCard from "@/components/dashboard/StatsCard";
+import SkeletonCard from "@/components/dashboard/SkeletonCard";
 
 export default function FounderDashboard() {
-    const { user, loading } = useAuth();
+    const { customUser, loading: userLoading } = useCustomUser();
 
-    const [stats, setStats] = useState({
-        totalOpportunities: 0,
-        totalApplications: 0,
-        acceptedMembers: 0,
-    });
-
-    const [pageLoading, setPageLoading] =
-        useState(true);
+    const [stats, setStats] = useState(null);
+    const [statsLoading, setStatsLoading] = useState(true);
 
     useEffect(() => {
-        if (!user?.email) return;
+        if (!customUser?.email) return;
 
         const loadDashboard = async () => {
             try {
                 const res = await axios.get(
-                    `/api/opportunities/dashboard/${user.email}`
+                    `/api/opportunities/dashboard/${customUser.email}`
                 );
-
                 if (res.data.success) {
                     setStats(res.data.data);
                 }
             } catch (error) {
-                console.log(error);
+                console.error("Founder stats error:", error);
             } finally {
-                setPageLoading(false);
+                setStatsLoading(false);
             }
         };
 
         loadDashboard();
-    }, [user]);
+    }, [customUser]);
 
-    if (loading || pageLoading) {
-        return (
-            <div className="py-20 text-center">
-                Loading...
-            </div>
-        );
-    }
+    const isLoading = userLoading || statsLoading;
 
     return (
-        <div>
-            <h1 className="text-4xl font-black text-brand-ink">
-                Founder Dashboard
-            </h1>
+        <div className="space-y-8">
+            {/* ── Page header ── */}
+            <div>
+                <h1 className="text-3xl font-black tracking-tight text-brand-ink">
+                    Founder Dashboard
+                </h1>
+                <p className="mt-1 text-sm text-gray-500">
+                    An overview of your startup, opportunities, and team.
+                </p>
+            </div>
 
-            <p className="mt-2 text-gray-500">
-                Manage your startup and opportunities.
-            </p>
+            {/* ── Stats grid ── */}
+            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                {isLoading ? (
+                    <>
+                        <SkeletonCard />
+                        <SkeletonCard />
+                        <SkeletonCard />
+                    </>
+                ) : (
+                    <>
+                        <StatsCard
+                            icon={BriefcaseBusiness}
+                            value={stats?.totalOpportunities ?? 0}
+                            label="Total Opportunities"
+                            color="purple"
+                            delay={0}
+                        />
+                        <StatsCard
+                            icon={Users}
+                            value={stats?.totalApplications ?? 0}
+                            label="Total Applications"
+                            color="blue"
+                            delay={0.08}
+                        />
+                        <StatsCard
+                            icon={CheckCircle}
+                            value={stats?.acceptedMembers ?? 0}
+                            label="Accepted Members"
+                            color="green"
+                            delay={0.16}
+                        />
+                    </>
+                )}
+            </div>
 
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
-                <div className="rounded-3xl bg-white p-6 shadow-sm">
-                    <BriefcaseBusiness className="text-brand-primary" />
-
-                    <h2 className="mt-4 text-3xl font-bold">
-                        {stats.totalOpportunities}
-                    </h2>
-
-                    <p className="text-gray-500">
-                        Opportunities
-                    </p>
-                </div>
-
-                <div className="rounded-3xl bg-white p-6 shadow-sm">
-                    <Users className="text-blue-500" />
-
-                    <h2 className="mt-4 text-3xl font-bold">
-                        {stats.totalApplications}
-                    </h2>
-
-                    <p className="text-gray-500">
-                        Applications
-                    </p>
-                </div>
-
-                <div className="rounded-3xl bg-white p-6 shadow-sm">
-                    <CheckCircle className="text-green-600" />
-
-                    <h2 className="mt-4 text-3xl font-bold">
-                        {stats.acceptedMembers}
-                    </h2>
-
-                    <p className="text-gray-500">
-                        Accepted Members
-                    </p>
+            {/* ── Quick-action cards ── */}
+            <div className="rounded-3xl bg-white p-6 shadow-sm">
+                <h2 className="mb-4 text-lg font-bold text-brand-ink">
+                    Quick Actions
+                </h2>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {[
+                        {
+                            label: "Post an Opportunity",
+                            href: "/dashboard/founder/opportunities",
+                            color: "bg-brand-primary/10 text-brand-primary hover:bg-brand-primary hover:text-white",
+                        },
+                        {
+                            label: "View Applications",
+                            href: "/dashboard/founder/applications",
+                            color: "bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white",
+                        },
+                        {
+                            label: "Manage My Startup",
+                            href: "/dashboard/founder/startup",
+                            color: "bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white",
+                        },
+                    ].map((action) => (
+                        <a
+                            key={action.href}
+                            href={action.href}
+                            className={`flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${action.color}`}
+                        >
+                            {action.label}
+                        </a>
+                    ))}
                 </div>
             </div>
         </div>
