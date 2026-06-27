@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 
-// Decode JWT payload without cryptographic verification (Edge-compatible)
-// Full signature verification happens on the Express backend APIs
 function decodeJWTPayload(token) {
     try {
         const base64Url = token.split(".")[1];
@@ -31,52 +29,46 @@ export function middleware(request) {
     const pathname = request.nextUrl.pathname;
     const token = request.cookies.get("token")?.value;
 
-    // ── 1. No token → redirect to login ──────────────────────────────────
     if (!token) {
-        const loginUrl = new URL("/login", request.url);
-        // Preserve the intended destination for post-login redirect
-        if (pathname !== "/dashboard") {
-            loginUrl.searchParams.set("callbackUrl", pathname);
+        if (pathname === "/dashboard") {
+            return NextResponse.next();
         }
+
+        const loginUrl = new URL("/login", request.url);
+        loginUrl.searchParams.set("callbackUrl", pathname);
         return NextResponse.redirect(loginUrl);
     }
 
-    // ── 2. Decode payload ─────────────────────────────────────────────────
     const payload = decodeJWTPayload(token);
 
-    // Malformed / unreadable token → force re-login
     if (!payload) {
         const loginUrl = new URL("/login", request.url);
+        loginUrl.searchParams.set("callbackUrl", pathname);
         return NextResponse.redirect(loginUrl);
     }
 
     const { role, isBlocked } = payload;
 
-    // ── 3. Blocked account → sign out and redirect ────────────────────────
     if (isBlocked) {
         const loginUrl = new URL("/login", request.url);
         loginUrl.searchParams.set("error", "account_blocked");
         const response = NextResponse.redirect(loginUrl);
-        // Clear the token cookie
         response.cookies.delete("token");
         return response;
     }
 
-    // ── 4. /dashboard root → let page.jsx handle the role redirect ────────
     if (pathname === "/dashboard") {
-        return NextResponse.next();
+        const correctPath = ROLE_DASHBOARD_MAP[role] ?? "/dashboard";
+        return NextResponse.redirect(new URL(correctPath, request.url));
     }
 
-    // ── 5. Shared routes inside /dashboard that are role-agnostic ─────────
     const sharedPaths = ["/dashboard/profile"];
     if (sharedPaths.some((p) => pathname.startsWith(p))) {
         return NextResponse.next();
     }
 
-    // ── 6. Role-segment mismatch → redirect to correct dashboard ──────────
-    // e.g. /dashboard/admin/users  → pathParts[2] = "admin"
     const pathParts = pathname.split("/");
-    const dashboardRoleSegment = pathParts[2]; // index 2 after empty string + "dashboard"
+    const dashboardRoleSegment = pathParts[2];
 
     if (
         dashboardRoleSegment &&
@@ -93,3 +85,4 @@ export function middleware(request) {
 export const config = {
     matcher: ["/dashboard/:path*"],
 };
+

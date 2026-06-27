@@ -34,7 +34,7 @@ export const roleNavigation = {
         },
         {
             label: "Add Opportunity",
-            href: "/dashboard/founder/opportunities/add",
+            href: "/dashboard/founder/opportunities/create",
             icon: Plus,
         },
         {
@@ -123,3 +123,4 @@ export const roleBadgeStyle = {
     collaborator: "bg-blue-100 text-blue-700",
     admin: "bg-amber-100 text-amber-700",
 };
+

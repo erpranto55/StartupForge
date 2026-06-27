@@ -18,11 +18,12 @@ import { authClient } from "@/lib/auth-client";
 
 export default function LoginForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get("callbackUrl");
 
     useEffect(() => {
         const error = searchParams.get("error");
@@ -57,7 +58,7 @@ export default function LoginForm() {
 
                         toast.success("Login Successful");
 
-                        router.push("/dashboard");
+                        router.push(callbackUrl?.startsWith("/dashboard") ? callbackUrl : "/dashboard");
                     },
 
                     onError: (ctx) => {
@@ -185,7 +186,11 @@ export default function LoginForm() {
                         try {
                             await authClient.signIn.social({
                                 provider: "google",
-                                callbackURL: "http://localhost:3000/dashboard",
+                                callbackURL: `http://localhost:3000/dashboard${
+                                    callbackUrl
+                                        ? `?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                                        : ""
+                                }`,
                                 errorURL: "http://localhost:3000/register",
                             });
                         } catch (err) {
