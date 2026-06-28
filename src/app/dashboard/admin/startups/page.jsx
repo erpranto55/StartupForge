@@ -25,7 +25,7 @@ export default function ManageStartupsPage() {
         try {
             setLoading(true);
 
-            const res = await axios.get("/api/startups");
+            const res = await axios.get("/api/startups/admin/all");
 
             if (res.data.success) {
                 setStartups(res.data.data);
