@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import uploadImage from "@/utils/uploadImage";
 import { useForm } from "react-hook-form";
 import { signUp, authClient } from "@/lib/auth-client";
 import { toast } from "react-toastify";
@@ -15,11 +17,15 @@ import {
 } from "lucide-react";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function RegisterForm() {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [preview, setPreview] = useState("");
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const router = useRouter();
 
     const {
         register,
@@ -27,7 +33,7 @@ export default function RegisterForm() {
         watch,
         formState: { errors }
     } = useForm();
-    
+
     const searchParams = useSearchParams();
     const selectedRole = watch("role") || "collaborator";
 
@@ -37,6 +43,15 @@ export default function RegisterForm() {
             toast.error(`Authentication error: ${error.replace(/_/g, " ")}`);
         }
     }, [searchParams]);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files?.[0];
+
+        if (!file) return;
+
+        setSelectedImage(file);
+        setPreview(URL.createObjectURL(file));
+    };
 
     const onSubmit = async (data) => {
         setLoading(true);
@@ -54,10 +69,20 @@ export default function RegisterForm() {
                 return;
             }
 
+            let imageUrl = "";
+
+            if (selectedImage) {
+                setUploadingImage(true);
+
+                imageUrl = await uploadImage(selectedImage);
+
+                setUploadingImage(false);
+            }
+
             const userData = {
                 name: data.name,
                 email: data.email,
-                image: data.image,
+                image: imageUrl,
                 role: data.role,
                 isBlocked: false,
             };
@@ -76,6 +101,7 @@ export default function RegisterForm() {
             const savedUser = await response.json();
 
             console.log(savedUser);
+            router.replace("/");
 
             toast.success("Registration Successful!");
         } catch (error) {
@@ -144,26 +170,35 @@ export default function RegisterForm() {
                     {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>}
                 </div>
 
-                {/* Image URL */}
+                {/* Profile Image */}
+
                 <div>
                     <label className="mb-2 block font-medium">
-                        Image URL
+                        Profile Image
                     </label>
 
-                    <div className="relative">
-                        <ImageIcon
-                            size={18}
-                            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                        />
+                    {preview && (
+                        <div className="mb-4 flex justify-center">
+                            <Image
+                                src={preview}
+                                alt="Preview"
+                                width={100}
+                                height={100}
+                                className="h-24 w-24 rounded-full border object-cover"
+                            />
+                        </div>
+                    )}
 
-                        <input
-                            {...register("image", { required: "Image URL is required" })}
-                            type="text"
-                            placeholder="https://..."
-                            className="h-12 w-full rounded-xl border border-gray-200 pl-12 pr-4 outline-none transition focus:border-brand-primary"
-                        />
-                    </div>
-                    {errors.image && <p className="mt-1 text-sm text-red-500">{errors.image.message}</p>}
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="block w-full rounded-xl border border-gray-200 p-3"
+                    />
+
+                    <p className="mt-2 text-sm text-gray-500">
+                        JPG, PNG or WEBP
+                    </p>
                 </div>
 
                 {/* Role */}
@@ -242,11 +277,13 @@ export default function RegisterForm() {
 
                 {/* Submit */}
                 <button
-                    disabled={loading}
+                    disabled={loading || uploadingImage}
                     type="submit"
                     className="h-12 w-full rounded-xl bg-brand-primary font-semibold text-white"
                 >
-                    {loading ? "Creating..." : "Create Account"}
+                    {loading || uploadingImage
+                        ? "Creating Account..."
+                        : "Create Account"}
                 </button>
 
                 {/* Divider */}
