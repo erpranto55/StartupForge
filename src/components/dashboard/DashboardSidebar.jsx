@@ -87,8 +87,8 @@ export default function DashboardSidebar({ role, customUser, isOpen, onClose }) 
                                     href={item.href}
                                     onClick={onClose}
                                     className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 ${active
-                                            ? "bg-brand-primary text-white shadow-md shadow-brand-primary/40"
-                                            : "text-white/60 hover:bg-white/8 hover:text-white"
+                                        ? "bg-brand-primary text-white shadow-md shadow-brand-primary/40"
+                                        : "text-white/60 hover:bg-white/8 hover:text-white"
                                         }`}
                                 >
                                     <item.icon size={16} className={active ? "text-white" : ""} />
@@ -107,14 +107,21 @@ export default function DashboardSidebar({ role, customUser, isOpen, onClose }) 
             </nav>
 
 
-            {role === "founder" && !user?.isPremium && (
-                <Link
-                    href="/dashboard/founder/premium"
-                    className="mx-3 mb-3 flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-yellow-500 to-orange-500 px-4 py-3 font-semibold text-white transition hover:scale-[1.02]"
-                >
-                    <Crown size={18} />
-                    Upgrade to Premium
-                </Link>
+            {role === "founder" && (
+                user?.isPremium ? (
+                    <div className="mx-3 mb-3 flex items-center justify-center gap-2 rounded-2xl bg-yellow-100 px-4 py-3 font-semibold text-yellow-700">
+                        <Crown size={18} />
+                        Premium Founder
+                    </div>
+                ) : (
+                    <Link
+                        href="/dashboard/founder/premium"
+                        className="mx-3 mb-3 flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-yellow-500 to-orange-500 px-4 py-3 font-semibold text-white transition hover:scale-[1.02]"
+                    >
+                        <Crown size={18} />
+                        Upgrade to Premium
+                    </Link>
+                )
             )}
 
             <div className="border-t border-white/10 p-3">

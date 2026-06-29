@@ -1,10 +1,11 @@
 "use client";
 
 import SafeAvatar from "@/components/profile/SafeAvatar";
-import { Bell, Menu, ChevronDown } from "lucide-react";
+import { Bell, Menu, ChevronDown, Crown } from "lucide-react";
 import { useState } from "react";
 import { roleGreeting, roleBadgeStyle } from "@/constants/roleBasedNavigation";
 import DashboardBreadcrumb from "./DashboardBreadcrumb";
+import Link from "next/link";
 
 export default function DashboardTopbar({ role, customUser, onMenuClick }) {
     const [notifOpen, setNotifOpen] = useState(false);
@@ -13,11 +14,11 @@ export default function DashboardTopbar({ role, customUser, onMenuClick }) {
     const user = customUser;
     const initials = user?.name
         ? user.name
-              .split(" ")
-              .map((n) => n[0])
-              .join("")
-              .slice(0, 2)
-              .toUpperCase()
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .slice(0, 2)
+            .toUpperCase()
         : "?";
 
     return (
@@ -62,33 +63,26 @@ export default function DashboardTopbar({ role, customUser, onMenuClick }) {
                     )}
                 </div>
 
-                <div className="hidden items-center gap-2.5 rounded-2xl border border-gray-100 bg-white px-3 py-2 sm:flex">
-                    <div className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-primary text-sm font-bold text-white">
-                        {user?.image ? (
-                            <SafeAvatar
-                                src={user.image}
-                                name={user.name}
-                                alt={user.name ?? "Avatar"}
-                                className="h-full w-full object-cover"
-                            />
+                <div className=" mt-2">
+                    {role === "founder" && (
+                        user?.isPremium ? (
+                            <div className="mx-3 mb-3 flex items-center justify-center gap-2 rounded-2xl bg-yellow-100 px-4 py-3 font-semibold text-yellow-700">
+                                <Crown size={18} />
+                                Premium Founder
+                            </div>
                         ) : (
-                            <span>{initials}</span>
-                        )}
-                    </div>
-
-                    <div className="hidden min-w-0 md:block">
-                        <p className="max-w-30 truncate text-xs font-semibold text-brand-ink">
-                            {user?.name ?? "..."}
-                        </p>
-                        <span
-                            className={`mt-0.5 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold capitalize ${badgeStyle}`}
-                        >
-                            {role}
-                        </span>
-                    </div>
-
-                    <ChevronDown size={14} className="text-gray-400" />
+                            <Link
+                                href="/dashboard/founder/premium"
+                                className="mx-3 mb-3 flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-yellow-500 to-orange-500 px-4 py-3 font-semibold text-white transition hover:scale-[1.02]"
+                            >
+                                <Crown size={18} />
+                                Upgrade to Premium
+                            </Link>
+                        )
+                    )}
                 </div>
+
+
             </div>
         </header>
     );

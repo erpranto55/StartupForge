@@ -15,16 +15,19 @@ function PaymentSuccessContent() {
         if (!email) return;
 
         const savePayment = async () => {
-            await axios.post(
-                "http://localhost:5000/api/payments",
-                {
-                    user_email: email,
-                    amount: 29,
-                    status: "Paid",
-                    transactionId: crypto.randomUUID(),
-                },
-                { withCredentials: true }
-            );
+            try {
+                await axios.post(
+                    "/api/payments",
+                    {
+                        user_email: email,
+                        amount: 29,
+                        payment_status: "Paid",
+                        transaction_id: crypto.randomUUID(),
+                    }
+                );
+            } catch (err) {
+                console.error(err);
+            }
         };
 
         savePayment();
