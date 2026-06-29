@@ -45,7 +45,7 @@ export default function LoginForm() {
                     onSuccess: async () => {
                         // Generate JWT Cookie
                         await fetch(
-                            "http://localhost:5000/api/custom-auth/jwt",
+                            `${process.env.NEXT_PUBLIC_API_URL}/api/custom-auth/jwt`,
                             {
                                 method: "POST",
                                 headers: {
@@ -186,12 +186,12 @@ export default function LoginForm() {
                         try {
                             await authClient.signIn.social({
                                 provider: "google",
-                                callbackURL: `http://localhost:3000/dashboard${
+                                callbackURL: `${process.env.NEXT_PUBLIC_CLIENT_URL}/dashboard${
                                     callbackUrl
                                         ? `?callbackUrl=${encodeURIComponent(callbackUrl)}`
                                         : ""
                                 }`,
-                                errorURL: "http://localhost:3000/register",
+                                errorURL: `${process.env.NEXT_PUBLIC_CLIENT_URL}/register`,
                             });
                         } catch (err) {
                             console.error(err);

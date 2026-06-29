@@ -88,7 +88,7 @@ export default function RegisterForm() {
             };
 
             const response = await fetch(
-                "http://localhost:5000/api/users",
+                `${process.env.NEXT_PUBLIC_API_URL}/api/users`,
                 {
                     method: "POST",
                     headers: {
@@ -300,8 +300,8 @@ export default function RegisterForm() {
                         try {
                             await authClient.signIn.social({
                                 provider: "google",
-                                callbackURL: `http://localhost:3000/dashboard?role=${selectedRole}`,
-                                errorURL: "http://localhost:3000/register",
+                                callbackURL: `${process.env.NEXT_PUBLIC_CLIENT_URL}/dashboard?role=${selectedRole}`,
+                                errorURL: "${process.env.NEXT_PUBLIC_CLIENT_URL}/register",
                             });
                         } catch (err) {
                             console.error(err);
