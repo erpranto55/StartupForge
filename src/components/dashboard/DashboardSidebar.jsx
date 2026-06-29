@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Crown } from "lucide-react";
 import Image from "next/image";
 import SafeAvatar from "@/components/profile/SafeAvatar";
 import { usePathname, useRouter } from "next/navigation";
@@ -17,11 +18,11 @@ export default function DashboardSidebar({ role, customUser, isOpen, onClose }) 
     const user = customUser;
     const initials = user?.name
         ? user.name
-              .split(" ")
-              .map((n) => n[0])
-              .join("")
-              .slice(0, 2)
-              .toUpperCase()
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .slice(0, 2)
+            .toUpperCase()
         : "?";
 
     const handleLogout = async () => {
@@ -85,11 +86,10 @@ export default function DashboardSidebar({ role, customUser, isOpen, onClose }) 
                                 <Link
                                     href={item.href}
                                     onClick={onClose}
-                                    className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
-                                        active
+                                    className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 ${active
                                             ? "bg-brand-primary text-white shadow-md shadow-brand-primary/40"
                                             : "text-white/60 hover:bg-white/8 hover:text-white"
-                                    }`}
+                                        }`}
                                 >
                                     <item.icon size={16} className={active ? "text-white" : ""} />
                                     <span className="truncate">{item.label}</span>
@@ -105,6 +105,17 @@ export default function DashboardSidebar({ role, customUser, isOpen, onClose }) 
                     })}
                 </ul>
             </nav>
+
+
+            {role === "founder" && !user?.isPremium && (
+                <Link
+                    href="/dashboard/founder/premium"
+                    className="mx-3 mb-3 flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-yellow-500 to-orange-500 px-4 py-3 font-semibold text-white transition hover:scale-[1.02]"
+                >
+                    <Crown size={18} />
+                    Upgrade to Premium
+                </Link>
+            )}
 
             <div className="border-t border-white/10 p-3">
                 <div className="flex items-center gap-3 rounded-2xl bg-white/5 p-3">

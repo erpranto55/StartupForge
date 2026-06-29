@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import axios from "axios";
+import axios from "@/lib/axios";
 
 import Link from "next/link";
 import { CheckCircle2, ArrowRight } from "lucide-react";
@@ -20,8 +20,8 @@ function PaymentSuccessContent() {
                 {
                     user_email: email,
                     amount: 29,
-                    payment_status: "Paid",
-                    transaction_id: crypto.randomUUID(),
+                    status: "Paid",
+                    transactionId: crypto.randomUUID(),
                 },
                 { withCredentials: true }
             );

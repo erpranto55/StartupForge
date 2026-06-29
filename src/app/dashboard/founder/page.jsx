@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BriefcaseBusiness, Users, CheckCircle } from "lucide-react";
+import { BriefcaseBusiness, Users, CheckCircle, Crown } from "lucide-react";
 import axios from "@/lib/axios";
 import useCustomUser from "@/hooks/useCustomUser";
 import StatsCard from "@/components/dashboard/StatsCard";
@@ -111,6 +111,12 @@ export default function FounderDashboard() {
                             href: "/dashboard/founder/startup",
                             color: "bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white",
                         },
+                        {
+                            label: "Upgrade Premium",
+                            href: "/dashboard/founder/premium",
+                            color:
+                                "bg-yellow-50 text-yellow-700 hover:bg-yellow-500 hover:text-white",
+                        }
                     ].map((action) => (
                         <Link
                             key={action.href}
