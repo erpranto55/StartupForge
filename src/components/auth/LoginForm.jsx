@@ -73,10 +73,30 @@ export default function LoginForm() {
                         const jwtData = await jwtRes.json();
                         if (jwtData.success && jwtData.token) {
                             document.cookie = `token=${jwtData.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+
+                            // Decode JWT to redirect directly to role-based dashboard
+                            try {
+                                const base64Url = jwtData.token.split(".")[1];
+                                const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+                                const payload = JSON.parse(atob(base64));
+                                const role = payload?.role || "collaborator";
+
+                                const ROLE_DASHBOARD_MAP = {
+                                    founder: "/dashboard/founder",
+                                    collaborator: "/dashboard/collaborator",
+                                    admin: "/dashboard/admin",
+                                };
+                                const correctPath = ROLE_DASHBOARD_MAP[role] ?? "/dashboard";
+
+                                toast.success("Login Successful");
+                                router.push(callbackUrl?.startsWith("/dashboard") ? callbackUrl : correctPath);
+                                return;
+                            } catch (e) {
+                                console.error("Error decoding token", e);
+                            }
                         }
 
                         toast.success("Login Successful");
-
                         router.push(callbackUrl?.startsWith("/dashboard") ? callbackUrl : "/dashboard");
                     },
 
