@@ -21,7 +21,7 @@ function DashboardContent() {
         const handleAuthAndRedirect = async () => {
             try {
                 const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.email}`
+                    `${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}/api/users/${session.user.email}`
                 );
                 let customUser = await res.json();
 
@@ -41,7 +41,7 @@ function DashboardContent() {
                         isBlocked: false,
                     };
 
-                    const createRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, {
+                    const createRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}/api/users`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(userData),
@@ -50,7 +50,7 @@ function DashboardContent() {
                     customUser = { ...userData, _id: customUser.insertedId };
                 }
 
-                await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/custom-auth/jwt`, {
+                await fetch(`${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}/api/custom-auth/jwt`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email: session.user.email }),
