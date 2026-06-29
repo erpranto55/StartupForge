@@ -71,10 +71,19 @@ export default function RegisterForm() {
     const onSubmit = async (data) => {
         setLoading(true);
         try {
+            let imageUrl = "";
+
+            if (selectedImage) {
+                setUploadingImage(true);
+                imageUrl = await uploadImage(selectedImage);
+                setUploadingImage(false);
+            }
+
             const result = await signUp.email({
                 email: data.email,
                 password: data.password,
                 name: data.name,
+                image: imageUrl,
             });
 
             console.log(result);
@@ -82,16 +91,6 @@ export default function RegisterForm() {
             if (result.error) {
                 toast.error(result.error.message);
                 return;
-            }
-
-            let imageUrl = "";
-
-            if (selectedImage) {
-                setUploadingImage(true);
-
-                imageUrl = await uploadImage(selectedImage);
-
-                setUploadingImage(false);
             }
 
             const userData = {

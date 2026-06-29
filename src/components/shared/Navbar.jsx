@@ -20,6 +20,7 @@ import {
 import { useSession, authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import SafeAvatar from "@/components/profile/SafeAvatar";
+import useCustomUser from "@/hooks/useCustomUser";
 
 const links = [
     {
@@ -51,6 +52,7 @@ export default function MainNavbar() {
 
     const router = useRouter();
     const { data: session, isPending } = useSession();
+    const { customUser } = useCustomUser();
 
     return (
         <header className="sticky top-0 z-50 border-b border-brand-rose/30 bg-brand-blush/80 backdrop-blur-2xl">
@@ -138,8 +140,8 @@ export default function MainNavbar() {
 
                             <Link href="/profile" className="flex size-11 items-center justify-center overflow-hidden rounded-full border border-brand-primary/30 bg-white/70 shadow-sm transition hover:shadow-md hover:border-brand-primary">
                                 <SafeAvatar
-                                    src={session.user?.image}
-                                    name={session.user?.name}
+                                    src={customUser?.image || session.user?.image}
+                                    name={customUser?.name || session.user?.name}
                                     alt="Profile"
                                     className="h-full w-full object-cover"
                                 />
