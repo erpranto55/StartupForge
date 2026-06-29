@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-
+import { toast } from "react-toastify";
+import useAuth from "@/hooks/useAuth";
 import axios from "@/lib/axios";
 
 import Link from "next/link";
@@ -20,6 +21,10 @@ export default function OpportunityDetailsPage() {
 
     const [opportunity, setOpportunity] = useState(null);
     const [loading, setLoading] = useState(true);
+    const { user } = useAuth();
+
+    const [applied, setApplied] = useState(false);
+    const [applying, setApplying] = useState(false);
 
     useEffect(() => {
         const loadOpportunity = async () => {
@@ -42,6 +47,53 @@ export default function OpportunityDetailsPage() {
             loadOpportunity();
         }
     }, [id]);
+
+    useEffect(() => {
+        if (!id || !user?.email) return;
+
+        const checkApplication = async () => {
+            try {
+                const res = await axios.get(
+                    `/api/applications/check?opportunity_id=${id}`
+                );
+
+                if (res.data.success) {
+                    setApplied(res.data.applied);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        checkApplication();
+    }, [id, user]);
+
+    const handleApply = async () => {
+        try {
+            setApplying(true);
+
+            const res = await axios.post("/api/applications", {
+                opportunity_id: opportunity._id,
+                founder_email: opportunity.founder_email,
+                startup_name: opportunity.startup_name,
+                role_title: opportunity.role_title,
+            });
+
+            if (res.data.success) {
+                toast.success("Application submitted successfully.");
+                setApplied(true);
+            }
+        } catch (error) {
+            console.log(error);
+
+            toast.error(
+                error.response?.data?.message ||
+                "Application failed."
+            );
+        } finally {
+            setApplying(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -164,12 +216,20 @@ export default function OpportunityDetailsPage() {
                         </div>
                     </div>
 
-                    <Link
-                        href={`/opportunities/${opportunity._id}/apply`}
-                        className="mt-8 flex w-full items-center justify-center rounded-xl bg-brand-primary px-5 py-3 font-semibold text-white"
+                    <button
+                        onClick={handleApply}
+                        disabled={applied || applying}
+                        className={`mt-8 flex w-full items-center justify-center rounded-xl px-5 py-3 font-semibold transition ${applied
+                                ? "cursor-not-allowed bg-green-600 text-white"
+                                : "bg-brand-primary text-white hover:opacity-90"
+                            }`}
                     >
-                        Apply Now
-                    </Link>
+                        {applying
+                            ? "Applying..."
+                            : applied
+                                ? "Already Applied"
+                                : "Apply Now"}
+                    </button>
                 </div>
             </div>
         </div>
