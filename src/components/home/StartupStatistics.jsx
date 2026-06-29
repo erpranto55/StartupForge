@@ -2,6 +2,9 @@
 
 import { motion } from "motion/react";
 
+import { useEffect, useState } from "react";
+import axios from "@/lib/axios";
+
 import {
     Rocket,
     Users,
@@ -9,30 +12,43 @@ import {
     TrendingUp,
 } from "lucide-react";
 
-const stats = [
-    {
-        title: "Active Startups",
-        value: "500+",
-        icon: Rocket,
-    },
-    {
-        title: "Collaborators",
-        value: "2K+",
-        icon: Users,
-    },
-    {
-        title: "Opportunities",
-        value: "1K+",
-        icon: BriefcaseBusiness,
-    },
-    {
-        title: "Success Rate",
-        value: "95%",
-        icon: TrendingUp,
-    },
-];
-
 export default function StartupStatistics() {
+    const [counts, setCounts] = useState({ startups: 0, opportunities: 0, collaborators: 0 });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        axios.get("/api/public-stats")
+            .then(res => {
+                if (res.data.success) {
+                    setCounts(res.data.data);
+                }
+            })
+            .catch(err => console.error(err))
+            .finally(() => setLoading(false));
+    }, []);
+
+    const stats = [
+        {
+            title: "Active Startups",
+            value: loading ? "..." : `${counts.startups}`,
+            icon: Rocket,
+        },
+        {
+            title: "Collaborators",
+            value: loading ? "..." : `${counts.collaborators}`,
+            icon: Users,
+        },
+        {
+            title: "Opportunities",
+            value: loading ? "..." : `${counts.opportunities}`,
+            icon: BriefcaseBusiness,
+        },
+        {
+            title: "Success Rate",
+            value: "95%",
+            icon: TrendingUp,
+        },
+    ];
     return (
         <section className="bg-[#F1E9E9] py-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">

@@ -11,52 +11,50 @@ import {
     Code2,
 } from "lucide-react";
 
-const opportunities = [
-    {
-        id: 1,
-        roleTitle: "Frontend Developer",
-        startupName: "AI Nexus",
-        skills: ["React", "Next.js", "Tailwind"],
-        deadline: "15 Aug 2026",
-    },
-    {
-        id: 2,
-        roleTitle: "Backend Developer",
-        startupName: "FinPilot",
-        skills: ["Node.js", "Express", "MongoDB"],
-        deadline: "20 Aug 2026",
-    },
-    {
-        id: 3,
-        roleTitle: "UI/UX Designer",
-        startupName: "HealthSync",
-        skills: ["Figma", "Design System"],
-        deadline: "12 Aug 2026",
-    },
-    {
-        id: 4,
-        roleTitle: "Product Manager",
-        startupName: "EduSphere",
-        skills: ["Agile", "Roadmap"],
-        deadline: "28 Aug 2026",
-    },
-    {
-        id: 5,
-        roleTitle: "Marketing Specialist",
-        startupName: "GreenVolt",
-        skills: ["SEO", "Growth"],
-        deadline: "10 Aug 2026",
-    },
-    {
-        id: 6,
-        roleTitle: "Full Stack Developer",
-        startupName: "MarketFlow",
-        skills: ["React", "Node.js", "MongoDB"],
-        deadline: "18 Aug 2026",
-    },
-];
+import { useEffect, useState } from "react";
+import axios from "@/lib/axios";
 
 export default function FeaturedOpportunities() {
+    const [opportunities, setOpportunities] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadOpportunities = async () => {
+            try {
+                const res = await axios.get("/api/opportunities?page=1&limit=6");
+                if (res.data.success) {
+                    setOpportunities(res.data.data);
+                }
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadOpportunities();
+    }, []);
+
+    if (loading) {
+        return (
+            <section className="bg-white py-24">
+                <div className="container mx-auto px-4 text-center text-gray-500">
+                    Loading featured opportunities...
+                </div>
+            </section>
+        );
+    }
+
+    if (!opportunities.length) {
+        return (
+            <section className="bg-white py-24">
+                <div className="container mx-auto px-4 text-center text-gray-500">
+                    No featured opportunities found.
+                </div>
+            </section>
+        );
+    }
+
     return (
         <section className="bg-white py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -92,7 +90,7 @@ export default function FeaturedOpportunities() {
                 <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {opportunities.map((item, index) => (
                         <motion.div
-                            key={item.id}
+                            key={item._id}
                             initial={{
                                 opacity: 0,
                                 y: 40,
@@ -120,14 +118,14 @@ export default function FeaturedOpportunities() {
 
                             {/* Role */}
                             <h3 className="mt-6 text-2xl font-bold text-[#15173D]">
-                                {item.roleTitle}
+                                {item.role_title}
                             </h3>
 
                             {/* Startup */}
                             <div className="mt-4 flex items-center gap-2 text-gray-600">
                                 <Building2 size={18} />
 
-                                <span>{item.startupName}</span>
+                                <span>{item.startup_name}</span>
                             </div>
 
                             {/* Skills */}
@@ -138,7 +136,13 @@ export default function FeaturedOpportunities() {
                                 </div>
 
                                 <div className="flex flex-wrap gap-2">
-                                    {item.skills.map((skill) => (
+                                    {(
+                                        Array.isArray(item.required_skills)
+                                            ? item.required_skills
+                                            : item.required_skills
+                                                ?.split(",")
+                                                .map(skill => skill.trim()) || []
+                                    ).map((skill) => (
                                         <span
                                             key={skill}
                                             className="rounded-full bg-brand-primary/10 px-3 py-1 text-sm font-medium text-brand-primary"
@@ -154,13 +158,13 @@ export default function FeaturedOpportunities() {
                                 <CalendarDays size={18} />
 
                                 <span>
-                                    Deadline: {item.deadline}
+                                    Deadline: {new Date(item.deadline).toLocaleDateString()}
                                 </span>
                             </div>
 
                             {/* Button */}
                             <Link
-                                href={`/opportunities/${item.id}`}
+                                href={`/opportunities/${item._id}`}
                                 className="mt-8 inline-flex items-center gap-2 font-semibold text-brand-primary transition hover:gap-3"
                             >
                                 View Details

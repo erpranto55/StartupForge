@@ -10,52 +10,50 @@ import {
     UserCircle2,
 } from "lucide-react";
 
-const startups = [
-    {
-        id: 1,
-        startupName: "AI Nexus",
-        founderName: "Sarah Ahmed",
-        industry: "Artificial Intelligence",
-        teamSize: "5 Members",
-    },
-    {
-        id: 2,
-        startupName: "FinPilot",
-        founderName: "Michael Johnson",
-        industry: "FinTech",
-        teamSize: "8 Members",
-    },
-    {
-        id: 3,
-        startupName: "HealthSync",
-        founderName: "Emily Carter",
-        industry: "HealthTech",
-        teamSize: "6 Members",
-    },
-    {
-        id: 4,
-        startupName: "EduSphere",
-        founderName: "David Wilson",
-        industry: "EdTech",
-        teamSize: "4 Members",
-    },
-    {
-        id: 5,
-        startupName: "GreenVolt",
-        founderName: "John Miller",
-        industry: "Clean Energy",
-        teamSize: "7 Members",
-    },
-    {
-        id: 6,
-        startupName: "MarketFlow",
-        founderName: "Sophia Brown",
-        industry: "Marketing Tech",
-        teamSize: "3 Members",
-    },
-];
+import { useEffect, useState } from "react";
+import axios from "@/lib/axios";
 
 export default function FeaturedStartups() {
+    const [startups, setStartups] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadStartups = async () => {
+            try {
+                const res = await axios.get("/api/startups");
+                if (res.data.success) {
+                    setStartups(res.data.data.slice(0, 6));
+                }
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadStartups();
+    }, []);
+
+    if (loading) {
+        return (
+            <section className="bg-[#F1E9E9] py-24">
+                <div className="container mx-auto px-4 text-center text-gray-500">
+                    Loading featured startups...
+                </div>
+            </section>
+        );
+    }
+
+    if (!startups.length) {
+        return (
+            <section className="bg-[#F1E9E9] py-24">
+                <div className="container mx-auto px-4 text-center text-gray-500">
+                    No featured startups found.
+                </div>
+            </section>
+        );
+    }
+
     return (
         <section className="bg-[#F1E9E9] py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -91,7 +89,7 @@ export default function FeaturedStartups() {
                 <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {startups.map((startup, index) => (
                         <motion.div
-                            key={startup.id}
+                            key={startup._id}
                             initial={{
                                 opacity: 0,
                                 y: 40,
@@ -110,16 +108,24 @@ export default function FeaturedStartups() {
                             className="group rounded-[28px] border border-[#E491C9]/20 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
                         >
                             {/* Logo */}
-                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-primary/10">
-                                <Building2
-                                    size={28}
-                                    className="text-brand-primary"
+                            {startup.logo ? (
+                                <img
+                                    src={startup.logo}
+                                    alt={startup.startup_name}
+                                    className="h-14 w-14 rounded-2xl object-cover"
                                 />
-                            </div>
+                            ) : (
+                                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-primary/10">
+                                    <Building2
+                                        size={28}
+                                        className="text-brand-primary"
+                                    />
+                                </div>
+                            )}
 
                             {/* Startup Name */}
                             <h3 className="mt-6 text-2xl font-bold text-[#15173D]">
-                                {startup.startupName}
+                                {startup.startup_name}
                             </h3>
 
                             {/* Founder */}
@@ -129,7 +135,7 @@ export default function FeaturedStartups() {
                                 />
 
                                 <span>
-                                    {startup.founderName}
+                                    {startup.founder_name}
                                 </span>
                             </div>
 
@@ -145,13 +151,13 @@ export default function FeaturedStartups() {
                                 <Users size={18} />
 
                                 <span>
-                                    {startup.teamSize} Needed
+                                    Team Members: {startup.team_members?.length || 0}
                                 </span>
                             </div>
 
                             {/* Button */}
                             <Link
-                                href={`/startups/${startup.id}`}
+                                href={`/startups/${startup._id}`}
                                 className="mt-8 inline-flex items-center gap-2 font-semibold text-brand-primary transition hover:gap-3"
                             >
                                 View Details
