@@ -36,7 +36,6 @@ const opportunitySchema = z.object({
 
 export default function CreateOpportunityForm() {
     const router = useRouter();
-
     const { user } = useAuth();
 
     const [loading, setLoading] = useState(false);
@@ -110,11 +109,24 @@ export default function CreateOpportunityForm() {
                 );
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
+
+            // Premium restriction
+            if (error.response?.status === 403) {
+                toast.info(
+                    "Free founders can create up to 3 opportunities. Upgrade to Premium for unlimited opportunities."
+                );
+
+                setLoading(false);
+
+                router.push("/dashboard/founder/premium");
+
+                return;
+            }
 
             toast.error(
                 error.response?.data?.message ||
-                "Something went wrong"
+                "Something went wrong."
             );
         } finally {
             setLoading(false);
@@ -262,7 +274,7 @@ export default function CreateOpportunityForm() {
             <button
                 type="submit"
                 disabled={loading}
-                className="mt-8 rounded-xl bg-brand-primary px-6 py-3 font-semibold text-white disabled:opacity-50"
+                className="mt-8 rounded-xl bg-brand-primary px-6 py-3 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
                 {loading
                     ? "Creating..."
