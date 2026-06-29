@@ -28,21 +28,6 @@ export default function RegisterForm() {
     const router = useRouter();
 
     const { data: session, isPending: sessionPending } = useSession();
-
-    useEffect(() => {
-        if (!sessionPending && session) {
-            router.replace("/profile");
-        }
-    }, [session, sessionPending, router]);
-
-    if (sessionPending || session) {
-        return (
-            <div className="flex h-48 w-full items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-primary border-t-transparent" />
-            </div>
-        );
-    }
-
     const {
         register,
         handleSubmit,
@@ -59,6 +44,20 @@ export default function RegisterForm() {
             toast.error(`Authentication error: ${error.replace(/_/g, " ")}`);
         }
     }, [searchParams]);
+
+    useEffect(() => {
+        if (!sessionPending && session) {
+            router.replace("/profile");
+        }
+    }, [session, sessionPending, router]);
+
+    if (sessionPending || session) {
+        return (
+            <div className="flex h-48 w-full items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-primary border-t-transparent" />
+            </div>
+        );
+    }
 
     const handleImageChange = (e) => {
         const file = e.target.files?.[0];

@@ -23,6 +23,15 @@ export default function LoginForm() {
     const [loading, setLoading] = useState(false);
 
     const { data: session, isPending: sessionPending } = useSession();
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    const callbackUrl = searchParams.get("callbackUrl");
+
+    useEffect(() => {
+        const error = searchParams.get("error");
+        if (error) {
+            toast.error(`Authentication error: ${error.replace(/_/g, " ")}`);
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         if (!sessionPending && session) {
@@ -37,16 +46,6 @@ export default function LoginForm() {
             </div>
         );
     }
-
-    const { register, handleSubmit, formState: { errors } } = useForm();
-    const callbackUrl = searchParams.get("callbackUrl");
-
-    useEffect(() => {
-        const error = searchParams.get("error");
-        if (error) {
-            toast.error(`Authentication error: ${error.replace(/_/g, " ")}`);
-        }
-    }, [searchParams]);
 
     const onSubmit = async (data) => {
         try {
