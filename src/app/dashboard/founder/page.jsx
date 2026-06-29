@@ -6,6 +6,7 @@ import axios from "@/lib/axios";
 import useCustomUser from "@/hooks/useCustomUser";
 import StatsCard from "@/components/dashboard/StatsCard";
 import SkeletonCard from "@/components/dashboard/SkeletonCard";
+import FounderAnalyticsChart from "@/components/dashboard/FounderAnalyticsChart";
 import Link from "next/link";
 
 export default function FounderDashboard() {
@@ -85,6 +86,8 @@ export default function FounderDashboard() {
                     </>
                 )}
             </div>
+
+            <FounderAnalyticsChart stats={stats} />
 
             {/* ── Quick-action cards ── */}
             <div className="rounded-3xl bg-white p-6 shadow-sm">
