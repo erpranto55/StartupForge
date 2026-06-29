@@ -14,13 +14,29 @@ import {
 } from "lucide-react";
 
 import { toast } from "react-toastify";
-import { authClient } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
 
 export default function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    const { data: session, isPending: sessionPending } = useSession();
+
+    useEffect(() => {
+        if (!sessionPending && session) {
+            router.replace("/profile");
+        }
+    }, [session, sessionPending, router]);
+
+    if (sessionPending || session) {
+        return (
+            <div className="flex h-48 w-full items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-primary border-t-transparent" />
+            </div>
+        );
+    }
 
     const { register, handleSubmit, formState: { errors } } = useForm();
     const callbackUrl = searchParams.get("callbackUrl");

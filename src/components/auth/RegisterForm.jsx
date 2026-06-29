@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import uploadImage from "@/utils/uploadImage";
 import { useForm } from "react-hook-form";
-import { signUp, authClient } from "@/lib/auth-client";
+import { signUp, authClient, useSession } from "@/lib/auth-client";
 import { toast } from "react-toastify";
 
 import {
@@ -26,6 +26,22 @@ export default function RegisterForm() {
     const [preview, setPreview] = useState("");
     const [uploadingImage, setUploadingImage] = useState(false);
     const router = useRouter();
+
+    const { data: session, isPending: sessionPending } = useSession();
+
+    useEffect(() => {
+        if (!sessionPending && session) {
+            router.replace("/profile");
+        }
+    }, [session, sessionPending, router]);
+
+    if (sessionPending || session) {
+        return (
+            <div className="flex h-48 w-full items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-primary border-t-transparent" />
+            </div>
+        );
+    }
 
     const {
         register,
@@ -101,9 +117,22 @@ export default function RegisterForm() {
             const savedUser = await response.json();
 
             console.log(savedUser);
-            router.replace("/");
+
+            // Generate JWT Cookie
+            await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}/api/custom-auth/jwt`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ email: data.email }),
+                    credentials: "include",
+                }
+            );
 
             toast.success("Registration Successful!");
+            router.replace("/dashboard");
         } catch (error) {
             toast.error(error.message || "Something went wrong");
         }
