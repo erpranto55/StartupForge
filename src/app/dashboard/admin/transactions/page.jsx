@@ -34,7 +34,7 @@ export default function TransactionsPage() {
 
         return transactions.filter((payment) =>
             payment.user_email?.toLowerCase().includes(keyword) ||
-            payment.transactionId?.toLowerCase().includes(keyword)
+            payment.transaction_id?.toLowerCase().includes(keyword)
         );
     }, [transactions, search]);
 
@@ -132,7 +132,7 @@ export default function TransactionsPage() {
                                     </td>
 
                                     <td className="px-6 py-4 text-gray-500">
-                                        {payment.transactionId || "-"}
+                                        {payment.transaction_id || "-"}
                                     </td>
 
                                     <td className="px-6 py-4 text-gray-500">
@@ -142,7 +142,7 @@ export default function TransactionsPage() {
                                     </td>
 
                                     <td className="px-6 py-4">
-                                        {payment.status === "Paid" ? (
+                                        {payment.payment_status === "Paid" ? (
                                             <span className="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-sm text-green-700">
                                                 <CheckCircle size={14} />
                                                 Paid

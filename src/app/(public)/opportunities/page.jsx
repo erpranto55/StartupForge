@@ -56,16 +56,6 @@ export default function OpportunitiesPage() {
         loadData();
     }, [page, search, filter]);
 
-    if (loading) {
-        return (
-            <div className="flex min-h-[60vh] items-center justify-center">
-                <p className="text-lg font-medium">
-                    Loading opportunities...
-                </p>
-            </div>
-        );
-    }
-
     return (
         <div className="container mx-auto px-4 py-16">
             {/* Header */}
@@ -121,7 +111,16 @@ export default function OpportunitiesPage() {
                 </select>
             </div>
 
-            {opportunities.length === 0 && (
+            {loading ? (
+                <div className="flex min-h-[40vh] items-center justify-center">
+                    <div className="flex flex-col items-center gap-3">
+                        <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-primary border-t-transparent" />
+                        <p className="text-sm font-medium text-brand-plum">
+                            Loading opportunities...
+                        </p>
+                    </div>
+                </div>
+            ) : opportunities.length === 0 ? (
                 <div className="mt-16 rounded-3xl bg-white p-12 text-center shadow">
                     <h2 className="text-2xl font-bold">
                         No Opportunities Found
@@ -131,10 +130,7 @@ export default function OpportunitiesPage() {
                         Try another search or filter.
                     </p>
                 </div>
-            )}
-
-
-            {opportunities.length > 0 && (
+            ) : (
                 <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {opportunities.map((opportunity) => (
                         <div

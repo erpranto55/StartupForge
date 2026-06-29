@@ -216,20 +216,21 @@ export default function OpportunityDetailsPage() {
                         </div>
                     </div>
 
-                    <button
-                        onClick={handleApply}
-                        disabled={applied || applying}
-                        className={`mt-8 flex w-full items-center justify-center rounded-xl px-5 py-3 font-semibold transition ${applied
-                                ? "cursor-not-allowed bg-green-600 text-white"
-                                : "bg-brand-primary text-white hover:opacity-90"
-                            }`}
-                    >
-                        {applying
-                            ? "Applying..."
-                            : applied
-                                ? "Already Applied"
-                                : "Apply Now"}
-                    </button>
+                    {applied ? (
+                        <button
+                            disabled
+                            className="mt-8 flex w-full items-center justify-center rounded-xl bg-green-600 px-5 py-3 font-semibold text-white cursor-not-allowed"
+                        >
+                            Already Applied
+                        </button>
+                    ) : (
+                        <Link
+                            href={`/opportunities/${opportunity._id}/apply`}
+                            className="mt-8 flex w-full items-center justify-center rounded-xl bg-brand-primary px-5 py-3 font-semibold text-white hover:opacity-90 transition"
+                        >
+                            Apply Now
+                        </Link>
+                    )}
                 </div>
             </div>
         </div>

@@ -7,13 +7,15 @@ import { toast } from "react-toastify";
 
 import axios from "@/lib/axios";
 import useAuth from "@/hooks/useAuth";
+import useCustomUser from "@/hooks/useCustomUser";
 
 export default function ApplyOpportunityForm({
     opportunityId,
 }) {
     const router = useRouter();
 
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
+    const { customUser, loading: customLoading } = useCustomUser();
 
     const [loading, setLoading] =
         useState(false);
@@ -73,7 +75,7 @@ export default function ApplyOpportunityForm({
                 applicant_email:
                     user.email,
 
-                portfolio_link:
+                portfolio:
                     data.portfolioLink,
 
                 motivation:
@@ -107,6 +109,28 @@ export default function ApplyOpportunityForm({
             setLoading(false);
         }
     };
+
+    if (authLoading || customLoading) {
+        return (
+            <div className="flex h-48 w-full items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-primary border-t-transparent" />
+            </div>
+        );
+    }
+
+    if (!user) {
+        router.replace(`/login?callbackUrl=/opportunities/${opportunityId}/apply`);
+        return null;
+    }
+
+    if (customUser?.role !== "collaborator") {
+        return (
+            <div className="rounded-3xl bg-white p-8 text-center shadow-sm">
+                <p className="font-bold text-red-500">Access Denied</p>
+                <p className="mt-2 text-gray-500">Only collaborators can apply for startup opportunities.</p>
+            </div>
+        );
+    }
 
     if (!opportunity) {
         return (

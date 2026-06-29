@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import axios from "@/lib/axios";
 import useCustomUser from "@/hooks/useCustomUser";
 import uploadImage from "@/utils/uploadImage";
+import { authClient } from "@/lib/auth-client";
 import SafeAvatar from "./SafeAvatar";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import {
@@ -108,6 +109,15 @@ export default function EditProfilePageView() {
             };
 
             await axios.patch(`/api/users/${customUser.email}`, payload);
+
+            try {
+                await authClient.updateUser({
+                    name: payload.name,
+                    image: payload.image,
+                });
+            } catch (err) {
+                console.error("Error updating Better Auth profile:", err);
+            }
 
             toast.success("Profile updated successfully");
             router.refresh();
