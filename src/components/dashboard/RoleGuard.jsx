@@ -41,6 +41,11 @@ export default function RoleGuard({ allowedRole, children }) {
 
         // Blocked account → force sign out
         if (customUser.isBlocked) {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}/api/custom-auth/logout`, {
+                method: "POST",
+                credentials: "include",
+            }).catch(console.error);
+            document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
             authClient.signOut().then(() => {
                 router.replace("/login?error=account_blocked");
             });

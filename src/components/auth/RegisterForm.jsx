@@ -118,7 +118,7 @@ export default function RegisterForm() {
             console.log(savedUser);
 
             // Generate JWT Cookie
-            await fetch(
+            const jwtRes = await fetch(
                 `${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}/api/custom-auth/jwt`,
                 {
                     method: "POST",
@@ -129,6 +129,10 @@ export default function RegisterForm() {
                     credentials: "include",
                 }
             );
+            const jwtData = await jwtRes.json();
+            if (jwtData.success && jwtData.token) {
+                document.cookie = `token=${jwtData.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+            }
 
             toast.success("Registration Successful!");
             router.replace("/dashboard");

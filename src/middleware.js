@@ -28,8 +28,12 @@ const ROLE_SEGMENTS = new Set(["founder", "collaborator", "admin"]);
 export function middleware(request) {
     const pathname = request.nextUrl.pathname;
     const token = request.cookies.get("token")?.value;
+    const isAuthPage = pathname === "/login" || pathname === "/register";
 
     if (!token) {
+        if (isAuthPage) {
+            return NextResponse.next();
+        }
         if (pathname === "/dashboard") {
             return NextResponse.next();
         }
@@ -42,6 +46,9 @@ export function middleware(request) {
     const payload = decodeJWTPayload(token);
 
     if (!payload) {
+        if (isAuthPage) {
+            return NextResponse.next();
+        }
         const loginUrl = new URL("/login", request.url);
         loginUrl.searchParams.set("callbackUrl", pathname);
         return NextResponse.redirect(loginUrl);
@@ -57,8 +64,13 @@ export function middleware(request) {
         return response;
     }
 
+    // Logged in users cannot access login/register pages; redirect them to profile
+    if (isAuthPage) {
+        return NextResponse.redirect(new URL("/profile", request.url));
+    }
+
     if (pathname === "/dashboard") {
-        const correctPath = ROLE_DASHBOARD_MAP[role] ?? "/dashboard";
+        const correctPath = ROLE_DASHBOARD_MAP[role] ?? "/login";
         return NextResponse.redirect(new URL(correctPath, request.url));
     }
 
@@ -83,6 +95,6 @@ export function middleware(request) {
 }
 
 export const config = {
-    matcher: ["/dashboard/:path*"],
+    matcher: ["/dashboard/:path*", "/login", "/register"],
 };
 

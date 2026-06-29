@@ -31,6 +31,11 @@ export default function DashboardSidebar({ role, customUser, isOpen, onClose }) 
                 method: "POST",
                 credentials: "include",
             });
+        } catch (err) {
+            console.error(err);
+        }
+        document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        try {
             await authClient.signOut();
         } catch {
             // Navigate away even if one sign-out request fails.

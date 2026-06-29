@@ -147,6 +147,15 @@ export default function MainNavbar() {
 
                             <button
                                 onClick={async () => {
+                                    try {
+                                        await fetch(`${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}/api/custom-auth/logout`, {
+                                            method: "POST",
+                                            credentials: "include",
+                                        });
+                                    } catch (err) {
+                                        console.error(err);
+                                    }
+                                    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
                                     await authClient.signOut();
                                     router.push("/login");
                                 }}
@@ -242,6 +251,15 @@ export default function MainNavbar() {
                                     <button
                                         onClick={async () => {
                                             setIsMenuOpen(false);
+                                            try {
+                                                await fetch(`${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}/api/custom-auth/logout`, {
+                                                    method: "POST",
+                                                    credentials: "include",
+                                                });
+                                            } catch (err) {
+                                                console.error(err);
+                                            }
+                                            document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
                                             await authClient.signOut();
                                             router.push("/login");
                                         }}

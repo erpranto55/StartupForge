@@ -26,6 +26,15 @@ function DashboardContent() {
                 let customUser = await res.json();
 
                 if (customUser && customUser.isBlocked) {
+                    try {
+                        await fetch(`${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}/api/custom-auth/logout`, {
+                            method: "POST",
+                            credentials: "include",
+                        });
+                    } catch (err) {
+                        console.error(err);
+                    }
+                    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
                     await authClient.signOut();
                     router.replace("/login?error=account_blocked");
                     return;
@@ -50,12 +59,16 @@ function DashboardContent() {
                     customUser = { ...userData, _id: customUser.insertedId };
                 }
 
-                await fetch(`${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}/api/custom-auth/jwt`, {
+                const jwtRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}/api/custom-auth/jwt`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email: session.user.email }),
                     credentials: "include",
                 });
+                const jwtData = await jwtRes.json();
+                if (jwtData.success && jwtData.token) {
+                    document.cookie = `token=${jwtData.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+                }
 
                 const callbackUrl = searchParams.get("callbackUrl");
                 if (callbackUrl?.startsWith("/dashboard")) {
